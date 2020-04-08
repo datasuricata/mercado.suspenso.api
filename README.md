@@ -1,5 +1,5 @@
 # mercado.suspenso.api
-Projeto com parceria da prefeitura mercado suspenso.
+Projeto com parceria da prefeitura e comércio.
 
 Iniciativa Open Source de apoio a comunidade
 
