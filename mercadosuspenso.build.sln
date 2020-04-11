@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29905.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mercadosuspenso.api", "mercadosuspenso.api\mercadosuspenso.api.csproj", "{162D6D4D-A99D-4957-B2D4-36FF985C2DB3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mercadosuspenso.orm", "mercadosuspenso.orm\mercadosuspenso.orm.csproj", "{EA14EDE5-AD74-4D79-B005-BFF503C1CCA2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mercadosuspenso.service", "mercadosuspenso.service\mercadosuspenso.service.csproj", "{1EC14895-7EDE-4C55-9493-E3E5FDB18B2B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mercadosuspenso.ioc", "mercadosuspenso.ioc\mercadosuspenso.ioc.csproj", "{94DEE5AE-3921-462B-8B76-EE8422A17B07}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mercadosuspenso.domain", "mercadosuspenso.domain\mercadosuspenso.domain.csproj", "{1E4EF35A-2961-4137-B7BF-E4BA77D51530}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{162D6D4D-A99D-4957-B2D4-36FF985C2DB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{162D6D4D-A99D-4957-B2D4-36FF985C2DB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{162D6D4D-A99D-4957-B2D4-36FF985C2DB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{162D6D4D-A99D-4957-B2D4-36FF985C2DB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA14EDE5-AD74-4D79-B005-BFF503C1CCA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA14EDE5-AD74-4D79-B005-BFF503C1CCA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA14EDE5-AD74-4D79-B005-BFF503C1CCA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA14EDE5-AD74-4D79-B005-BFF503C1CCA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EC14895-7EDE-4C55-9493-E3E5FDB18B2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EC14895-7EDE-4C55-9493-E3E5FDB18B2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EC14895-7EDE-4C55-9493-E3E5FDB18B2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EC14895-7EDE-4C55-9493-E3E5FDB18B2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94DEE5AE-3921-462B-8B76-EE8422A17B07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94DEE5AE-3921-462B-8B76-EE8422A17B07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94DEE5AE-3921-462B-8B76-EE8422A17B07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94DEE5AE-3921-462B-8B76-EE8422A17B07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E4EF35A-2961-4137-B7BF-E4BA77D51530}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E4EF35A-2961-4137-B7BF-E4BA77D51530}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E4EF35A-2961-4137-B7BF-E4BA77D51530}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E4EF35A-2961-4137-B7BF-E4BA77D51530}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {63915ACC-0F21-41C5-8C8F-912958EB5ADF}
+	EndGlobalSection
+EndGlobal

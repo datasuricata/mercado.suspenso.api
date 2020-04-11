@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\mercadosuspenso.domain\mercadosuspenso.domain.csproj" />
+    <ProjectReference Include="..\mercadosuspenso.orm\mercadosuspenso.orm.csproj" />
+  </ItemGroup>
+
+</Project>

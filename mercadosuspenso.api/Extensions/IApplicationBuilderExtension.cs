@@ -1,0 +1,31 @@
+﻿using mercadosuspenso.api.Middlewares;
+using Microsoft.AspNetCore.Builder;
+
+namespace mercadosuspenso.api.Extensions
+{
+    public static class IApplicationBuilderExtension
+    {
+        public static IApplicationBuilder UseSwaggerConfig(this IApplicationBuilder app)
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Mercado Suspenso API - V1"); });
+
+            return app;
+        }
+
+        public static IApplicationBuilder UseEndpointsConfig(this IApplicationBuilder app)
+        {
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+
+            return app;
+        }
+
+        public static IApplicationBuilder UseExceptionHandlers(this IApplicationBuilder app)
+        {
+            return app.UseMiddleware<ExceptionHandler>();
+        }
+    }
+}
