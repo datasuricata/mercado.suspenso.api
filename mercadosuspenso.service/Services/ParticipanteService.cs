@@ -34,9 +34,9 @@ namespace mercadosuspenso.service.Services
             {
                 Assert Quando = Domain.Validate;
 
-                Quando(registrado.Status == RegistroStatus.Refused, "Existem algum problema com este cadastro, contate o suporte.");
+                Quando(registrado.Status == RegistroStatus.Refused, "Existem algum problema com seu cadastro, contate o suporte");
 
-                Quando(registrado != null, "Você já possui um cadastro sendo processado.");
+                Quando(registrado != null, "Já um cadastro processado ou pendente com estes dados");
             }
             else
             {
@@ -53,7 +53,7 @@ namespace mercadosuspenso.service.Services
 
         public async Task AprovarRecusarAsync(string cpf)
         {
-            var participante = await repository.ByAsync(p => p.Ativo && p.Cpf == cpf.CleanFormat());
+            var participante = await repository.ByAsync(p => p.Ativo && p.Cpf == cpf.CleanFormat(), false);
 
             if (participante.Status == RegistroStatus.Aproved)
             {

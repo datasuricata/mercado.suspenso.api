@@ -1,17 +1,20 @@
 ﻿using mercadosuspenso.domain.Enums;
 using mercadosuspenso.domain.Exceptions;
+using mercadosuspenso.domain.Extensions;
 
 namespace mercadosuspenso.domain.Models
 {
     public class Distribuidor : Entity
     {
-        public Distribuidor(string razaoSocial, string nome, string cnpj, string telefone)
+        public Distribuidor(string razaoSocial, string representante, string cnpj, string telefone)
         {
+            Cnpj = cnpj.CleanFormat();
             Telefone = telefone;
             RazaoSocial = razaoSocial;
-            Representante = nome;
-            Cnpj = cnpj;
+            Representante = representante;
             Status = default;
+
+            Validar();
         }
 
         protected Distribuidor()
@@ -30,18 +33,18 @@ namespace mercadosuspenso.domain.Models
         public string UsuarioId { get; set; }
         public Usuario Usuario { get; set; }
 
-        public void Aprova() => Status = RegistroStatus.Aproved;
+        public void Aprovar() => Status = RegistroStatus.Aproved;
 
-        public void Recusa() => Status = RegistroStatus.Refused;
+        public void Recusar() => Status = RegistroStatus.Refused;
 
-        public void Validate()
+        public void Validar()
         {
-            Assert When = Domain.Validate;
+            Assert Quando = Domain.Validate;
             
-            When(string.IsNullOrEmpty(Representante), "Nome do representante legal é obrigatório");
-            When(string.IsNullOrEmpty(Cnpj), "Cnpj deve ser informado");
-            When(string.IsNullOrEmpty(RazaoSocial), "Razao Social deve ser informada");
-            When(Cnpj.Length != 14, "Cnpj inválido");
+            Quando(string.IsNullOrEmpty(Representante), "Nome do representante legal é obrigatório");
+            Quando(string.IsNullOrEmpty(Cnpj), "Cnpj deve ser informado");
+            Quando(string.IsNullOrEmpty(RazaoSocial), "Razao Social deve ser informada");
+            Quando(Cnpj.Length != 14, "Cnpj inválido");
         }
     }
 }

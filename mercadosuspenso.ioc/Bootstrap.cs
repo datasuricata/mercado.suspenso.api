@@ -21,6 +21,7 @@ namespace mercadosuspenso.ioc
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             services.AddTransient<IParticipanteService, ParticipanteService>();
+            services.AddTransient<IDistribuidorService, DistribuidorService>();
         }
     }
 }
