@@ -30,7 +30,7 @@ namespace mercadosuspenso.api
         {
             app.UseHttpsRedirection();
             app.UseRouting();
-            //app.UseCorsConfig();
+            app.UseCorsConfig();
             app.UseExceptionHandlers();
             app.UseAuthentication();
             app.UseAuthorization();

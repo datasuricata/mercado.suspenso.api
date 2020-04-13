@@ -23,6 +23,18 @@ namespace mercadosuspenso.api.Extensions
             return app;
         }
 
+        public static IApplicationBuilder UseCorsConfig(this IApplicationBuilder app)
+        {
+            app.UseCors(x =>
+            {
+                x.AllowAnyHeader();
+                x.AllowAnyMethod();
+                x.AllowAnyOrigin();
+            });
+
+            return app;
+        }
+
         public static IApplicationBuilder UseExceptionHandlers(this IApplicationBuilder app)
         {
             return app.UseMiddleware<ExceptionHandler>();

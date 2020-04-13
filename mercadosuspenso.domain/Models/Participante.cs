@@ -1,5 +1,6 @@
 ﻿using mercadosuspenso.domain.Enums;
 using mercadosuspenso.domain.Exceptions;
+using mercadosuspenso.domain.Extensions;
 
 namespace mercadosuspenso.domain.Models
 {
@@ -7,13 +8,13 @@ namespace mercadosuspenso.domain.Models
     {
         public Participante(string nome, string cpf, string rg, string telefone)
         {
+            Cpf = cpf.CleanFormat();
             Telefone = telefone;
             Nome = nome;
-            Cpf = cpf;
             Rg = rg;
             Status = default;
 
-            Validate();
+            Validar();
         }
 
         protected Participante()
@@ -29,18 +30,18 @@ namespace mercadosuspenso.domain.Models
         public string EnderecoId { get; set; }
         public Endereco Endereco { get; set; }
 
-        public void Aprova() => Status = RegistroStatus.Aproved;
+        public void Aprovar() => Status = RegistroStatus.Aproved;
 
-        public void Recusa() => Status = RegistroStatus.Refused;
+        public void Recusar() => Status = RegistroStatus.Refused;
 
-        public void Validate()
+        public void Validar()
         {
-            Assert When = Domain.Validate;
+            Assert Quando = Domain.Validate;
 
-            When(string.IsNullOrEmpty(Nome), "Nome é obrigatório");
-            When(string.IsNullOrEmpty(Cpf), "Cpf deve ser informado");
-            When(Cpf.Length != 11, "Cpf inválido");
-            When(string.IsNullOrEmpty(Rg), "Rg inválido");
+            Quando(string.IsNullOrEmpty(Nome), "Nome é obrigatório");
+            Quando(string.IsNullOrEmpty(Cpf), "Cpf deve ser informado");
+            Quando(Cpf.Length != 11, "Cpf inválido");
+            Quando(string.IsNullOrEmpty(Rg), "Rg inválido");
         }
     }
 }

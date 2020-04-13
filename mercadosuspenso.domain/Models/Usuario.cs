@@ -1,4 +1,5 @@
 ﻿using mercadosuspenso.domain.Enums;
+using mercadosuspenso.domain.Extensions;
 
 namespace mercadosuspenso.domain.Models
 {
@@ -6,8 +7,8 @@ namespace mercadosuspenso.domain.Models
     {
         public Usuario(string email, string senha)
         {
+            Senha = senha.EncryptToMD5();
             Email = email;
-            Senha = senha;
         }
 
         protected Usuario()

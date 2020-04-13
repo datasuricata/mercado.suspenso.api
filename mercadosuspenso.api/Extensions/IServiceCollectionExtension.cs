@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System;
 using System.Collections.Generic;
 using System.Security.Principal;
 using System.Text;
@@ -47,7 +48,23 @@ namespace mercadosuspenso.api.Extensions
 
                 c.EnableAnnotations();
 
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mercado Suspenso API", Version = "v1", Description = "Documentação de endpoints do projeto mercado suspenso com padrões Rest" });
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Mercado Suspenso API",
+                    Version = "v1",
+                    Description = "Documentação de endpoints do projeto mercado suspenso com padrões Rest",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Contate o desenvolvedor",
+                        Url = new Uri("https://datasuricata.github.io/"),
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "Informações de licensa",
+                        Url = new Uri("https://amorsuspenso.com.br/termosdelicenca")
+                    }
+                });
+
                 c.CustomSchemaIds(x => x.FullName);
             });
 

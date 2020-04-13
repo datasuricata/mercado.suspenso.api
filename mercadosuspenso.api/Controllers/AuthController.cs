@@ -26,7 +26,7 @@ namespace mercadosuspenso.api.Controllers
 
         [AllowAnonymous]
         [HttpPost("signin")]
-        [SwaggerOperation(Summary = "SignIn de autorização", Description = "Use este endpoint para realizar o login do usuário")]
+        [SwaggerOperation(Summary = "Login e autorização", Description = "Use este endpoint para realizar o login do usuário")]
         [SwaggerResponse(200, "Token é valido")]
         public IActionResult SignIn([FromBody] SignInCommand command)
         {

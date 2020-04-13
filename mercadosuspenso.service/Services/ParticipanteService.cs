@@ -1,17 +1,26 @@
 ﻿using mercadosuspenso.domain.Enums;
+using mercadosuspenso.domain.Exceptions;
+using mercadosuspenso.domain.Extensions;
 using mercadosuspenso.domain.Interfaces.Services;
 using mercadosuspenso.domain.Models;
+using mercadosuspenso.domain.Models.External;
 using mercadosuspenso.orm.Repository;
+using Newtonsoft.Json;
+using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace mercadosuspenso.service.Services
 {
     public class ParticipanteService : IParticipanteService
     {
+        private delegate void Assert(bool error, string message);
+
         private readonly IRepository<Participante> repository;
 
         public ParticipanteService(IRepository<Participante> repository)
         {
+
             this.repository = repository;
         }
 
@@ -19,43 +28,66 @@ namespace mercadosuspenso.service.Services
         {
             var participante = new Participante(nome, cpf, rg, telefone);
 
-            var registrado = await repository.ByAsync(p => p.Ativo && p.Cpf == cpf);
+            var registrado = await repository.ByAsync(p => p.Ativo && p.Cpf == participante.Cpf);
 
             if (registrado != null)
             {
-                var recusado = registrado.Status == RegistroStatus.Refused;
+                Assert Quando = Domain.Validate;
 
-                if (recusado)
-                {
+                Quando(registrado.Status == RegistroStatus.Refused, "Existem algum problema com este cadastro, contate o suporte.");
 
-                    //todo notification
-                }
-
-                //todo notification
+                Quando(registrado != null, "Você já possui um cadastro sendo processado.");
             }
+            else
+            {
+                var existente = await VerificaCadastroPortalTransparenciaAsync(participante.Cpf);
 
-            //todo bater no CadUnico se for valido
-            //http://www.transparencia.gov.br/api-de-dados/bolsa-familia-disponivel-por-cpf-ou-nis?codigo=09319765960&anoMesReferencia=202001&anoMesCompetencia=202001&pagina=1
+                if (existente)
+                {
+                    participante.Aprovar();
+                }
+            }
 
             await repository.InsertAsync(participante);
         }
+
+        public async Task AprovarRecusarAsync(string cpf)
+        {
+            var participante = await repository.ByAsync(p => p.Ativo && p.Cpf == cpf.CleanFormat());
+
+            if (participante.Status == RegistroStatus.Aproved)
+            {
+                participante.Recusar();
+            }
+            if (participante.Status == RegistroStatus.Pendent || participante.Status == RegistroStatus.Refused)
+            {
+                participante.Aprovar();
+            }
+        }
+
+        private async Task<bool> VerificaCadastroPortalTransparenciaAsync(string cpf)
+        {
+            var date = DateTime.Now.ToString("yyyyMM");
+
+            var uri = new UriBuilder("http://www.transparencia.gov.br/")
+            {
+                Path = $"http://www.transparencia.gov.br/api-de-dados/bolsa-familia-disponivel-por-cpf-ou-nis?codigo={cpf}&anoMesReferencia={date}&anoMesCompetencia={date}&pagina=1",
+            };
+
+            using var client = new HttpClient();
+
+            var response = await client.GetAsync(uri.ToString());
+
+            if (response.IsSuccessStatusCode)
+            {
+                var obj = await response.Content.ReadAsStringAsync();
+
+                var result = JsonConvert.DeserializeObject<BolsaFamilia>(obj);
+
+                return result != null;
+            }
+            else
+                return false;
+        }
     }
-}
-
-public class TitularBolsaFamilia
-{
-    public string CpfFormatado { get; set; }
-    public bool MultiploCadastro { get; set; }
-    public string Nis { get; set; }
-    public string Nome { get; set; }
-}
-
-public class BolsaFamilia
-{
-    public string DataMesCompetencia { get; set; }
-    public string DataMesReferencia { get; set; }
-    public int Id { get; set; }
-    public int QuantidadeDependentes { get; set; }
-    public TitularBolsaFamilia TitularBolsaFamilia { get; set; }
-    public int Valor { get; set; }
 }
