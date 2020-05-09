@@ -1,21 +1,21 @@
 ﻿using mercadosuspenso.domain.Enums;
+using mercadosuspenso.domain.Extensions;
 using System;
 
 namespace mercadosuspenso.domain.Models
 {
     public class Vistoria : Entity
     {
-        public Vistoria(string hash, DateTime processamento, VistoriaStatus status, string distribudidorId)
+        public Vistoria(Doacao doacao)
         {
-            Hash = hash;
-            Processamento = processamento;
-            Status = status;
-            DistribudidorId = distribudidorId;
+            Hash = IRandomExtension.RandomLetter(8);
+            Processamento = DateTime.UtcNow;
+            Doacao = doacao;
+            Status = default;
         }
 
         protected Vistoria()
         {
-
         }
 
         public string Hash { get; set; }
@@ -30,5 +30,17 @@ namespace mercadosuspenso.domain.Models
 
         public string ParticipanteId { get; set; }
         public Participante Participante { get; set; }
+
+        public void Resgatar(string distribuidorId)
+        {
+            Hash = IRandomExtension.RandomLetter(8);
+            Status = VistoriaStatus.Resgate;
+            DistribudidorId = distribuidorId;
+        }
+        public void Retirar(string participanteId)
+        {
+            Status = VistoriaStatus.Retirada;
+            ParticipanteId = participanteId;
+        }
     }
 }

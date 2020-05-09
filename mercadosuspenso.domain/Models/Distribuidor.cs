@@ -33,14 +33,14 @@ namespace mercadosuspenso.domain.Models
         public string UsuarioId { get; set; }
         public Usuario Usuario { get; set; }
 
-        public void Aprovar() => Status = RegistroStatus.Aproved;
+        public void Aprovar() => Status = RegistroStatus.Aprovado;
 
-        public void Recusar() => Status = RegistroStatus.Refused;
+        public void Recusar() => Status = RegistroStatus.Recusado;
 
         public void Validar()
         {
-            Assert Quando = Domain.Validate;
-            
+            Assert Quando = DomainException.Validate;
+
             Quando(string.IsNullOrEmpty(Representante), "Nome do representante legal é obrigatório");
             Quando(string.IsNullOrEmpty(Cnpj), "Cnpj deve ser informado");
             Quando(string.IsNullOrEmpty(RazaoSocial), "Razao Social deve ser informada");

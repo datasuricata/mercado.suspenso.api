@@ -3,7 +3,7 @@
     public enum VistoriaStatus
     {
         Entrada = 0,
-        Resgatada = 1,
+        Resgate = 1,
         Retirada = 2,
     }
 }

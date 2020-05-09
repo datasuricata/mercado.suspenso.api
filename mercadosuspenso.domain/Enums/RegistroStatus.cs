@@ -2,8 +2,8 @@
 {
     public enum RegistroStatus
     {
-        Pendent = 0,
-        Aproved = 1,
-        Refused = 2,
+        Pendente = 0,
+        Aprovado = 1,
+        Recusado = 2,
     }
 }

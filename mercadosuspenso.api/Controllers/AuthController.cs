@@ -1,67 +1,60 @@
 ﻿using mercadosuspenso.api.Commands;
-using mercadosuspenso.domain.Models;
+using mercadosuspenso.domain.Dtos;
+using mercadosuspenso.domain.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace mercadosuspenso.api.Controllers
 {
     [ApiController]
-    [Route("auth")]
+    [Route("oauth")]
     public class AuthController : ControllerBase
     {
-        private readonly IConfiguration config;
-
-        public AuthController(IConfiguration config)
+        private readonly IAutenticacaoService service;
+        public AuthController(IAutenticacaoService service)
         {
-            this.config = config;
+            this.service = service;
         }
 
         [AllowAnonymous]
-        [HttpPost("signin")]
-        [SwaggerOperation(Summary = "Login e autorização", Description = "Use este endpoint para realizar o login do usuário")]
-        [SwaggerResponse(200, "Token é valido")]
-        public IActionResult SignIn([FromBody] SignInCommand command)
+        [HttpPost("signin/varejista")]
+        [SwaggerOperation(Summary = "Login e autorização da Loja", Description = "Use este endpoint para realizar o login do usuário varejista")]
+        [SwaggerResponse(200, "Sucesso", type: typeof(SignInDto))]
+        [SwaggerResponse(400, "Dados inválidos", type: typeof(ProblemDto))]
+        public async Task<IActionResult> SignInVarejista([FromBody] SigninCommand command)
         {
-            var handler = new JwtSecurityTokenHandler();
+            var dto = await service.SignInVarejistaAsync(command.Username, command.Password);
 
-            var key = Encoding.ASCII.GetBytes(config["SecurityKey"]);
-
-            var payload = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Email, command.Email) }),
-                Expires = DateTime.UtcNow.AddHours(3),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-                SecurityAlgorithms.HmacSha256Signature),
-                IssuedAt = DateTime.UtcNow,
-            };
-
-            var json = new
-            {
-                Status = 200,
-                command.Email,
-                AccessToken = handler.WriteToken(handler.CreateToken(payload)),
-            };
-
-            return Ok(json);
+            return Ok(dto);
         }
 
-        [HttpGet("sample")]
-        [SwaggerOperation(Summary = "Teste de autorização", Description = "Use este endpoint para realizar o funcionamento do token resgatado pelo signin")]
-        [SwaggerResponse(200, "Token é valido")]
-        [SwaggerResponse(401, "Não autorizado")]
-        public IActionResult Sample()
+        [AllowAnonymous]
+        [HttpPost("signin/distribuidor")]
+        [SwaggerOperation(Summary = "Login e autorização do distribuidor", Description = "Use este endpoint para realizar o login do usuário distribuidor")]
+        [SwaggerResponse(200, "Sucesso", type: typeof(SignInDto))]
+        [SwaggerResponse(400, "Dados inválidos", type: typeof(ProblemDto))]
+        public async Task<IActionResult> SignInDistribuidor([FromBody] SigninCommand command)
         {
-            var json = new { Status = 200, Message = "Token é valido" };
+            var dto = await service.SignInDistribuidorAsync(command.Username, command.Password);
 
-            return Ok(json);
+            return Ok(dto);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("signin/admin")]
+        [SwaggerOperation(Summary = "Login e autorização do admin", Description = "Use este endpoint para realizar o login do usuário administrador")]
+        [SwaggerResponse(200, "Sucesso", type: typeof(SignInDto))]
+        [SwaggerResponse(400, "Dados inválidos", type: typeof(ProblemDto))]
+        public async Task<IActionResult> SignInAdmin([FromBody] SigninCommand command)
+        {
+            var dto = await service.SignInAdminAsync(command.Username, command.Password);
+
+            return Ok(dto);
         }
     }
 }

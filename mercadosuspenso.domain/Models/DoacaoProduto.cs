@@ -2,6 +2,18 @@
 {
     public class DoacaoProduto
     {
+        public DoacaoProduto(string doacaoId, string produtoId)
+        {
+            DoacaoId = doacaoId;
+            ProdutoId = produtoId;
+        }
+
+        public DoacaoProduto(Doacao doacao, Produto produto)
+        {
+            Doacao = doacao;
+            Produto = produto;
+        }
+
         protected DoacaoProduto()
         {
         }

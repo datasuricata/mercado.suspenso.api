@@ -11,7 +11,6 @@ namespace mercadosuspenso.orm.Repository
     public class Repository<T> : IRepository<T> where T : Entity
     {
         private readonly MercadoDbContext context;
-
         public Repository(MercadoDbContext context)
         {
             this.context = context;
@@ -30,55 +29,49 @@ namespace mercadosuspenso.orm.Repository
             return query;
         }
 
-        public virtual async Task UpdateAsync(T entity)
-        {
-            context.Set<T>().Attach(entity);
-            context.Entry(entity);
-
-            await context.SaveChangesAsync();
-        }
-
         public virtual bool Exist(Func<T, bool> where, params Expression<Func<T, object>>[] includes)
         {
-            if (includes.Any())
-                return Include(context.Set<T>(), includes).Any(where);
-            return context.Set<T>().Any(where);
+            return includes.Any() ? Include(context.Set<T>(), includes).Any(where) : context.Set<T>().Any(where);
         }
 
-        public virtual async Task<T> ByIdAsync(string id, bool readOnly = true, params Expression<Func<T, object>>[] includes)
+        public virtual async Task<T> ByAsync(Expression<Func<T, bool>> where, bool noTracking = true, params Expression<Func<T, object>>[] includes)
         {
-            if (includes.Any())
-                return await Queryable(readOnly, includes).FirstOrDefaultAsync(x => x.Id == id);
-            return await context.Set<T>().FindAsync(id);
+            return await Queryable(noTracking, includes).FirstOrDefaultAsync(where);
         }
 
-        public virtual async Task<T> ByAsync(Expression<Func<T, bool>> where, bool readOnly = true, params Expression<Func<T, object>>[] includes)
+        public virtual async Task<T> ByIdAsync(string id, bool noTracking = true, params Expression<Func<T, object>>[] includes)
         {
-            return await Queryable(readOnly, includes).FirstOrDefaultAsync(where);
+            return includes.Any() ? await Queryable(noTracking, includes).FirstOrDefaultAsync(x => x.Id == id) : await context.Set<T>().FindAsync(id);
+        }
+
+        public virtual async Task<IEnumerable<T>> ListByAsync(Expression<Func<T, bool>> where, bool noTracking = true, params Expression<Func<T, object>>[] includes)
+        {
+            return await Queryable(noTracking, includes).Where(where).ToListAsync();
+        }
+        
+        public virtual async Task<IEnumerable<T>> ListAsync(bool noTracking = true, params Expression<Func<T, object>>[] includes)
+        {
+            return await Queryable(noTracking, includes).ToListAsync();
         }
 
         public virtual async Task InsertAsync(T entity)
         {
             await context.Set<T>().AddAsync(entity);
-
             await context.SaveChangesAsync();
         }
 
         public virtual async Task InsertRangeAsync(IEnumerable<T> entities)
         {
             await context.Set<T>().AddRangeAsync(entities);
-
             await context.SaveChangesAsync();
         }
 
-        public virtual async Task<IEnumerable<T>> ListAsync(bool readOnly = true, params Expression<Func<T, object>>[] includes)
+        public virtual async Task UpdateAsync(T entity)
         {
-            return await Queryable(readOnly, includes).ToListAsync();
-        }
+            context.Set<T>().Attach(entity);
+            context.Entry(entity);
 
-        public virtual async Task<IEnumerable<T>> ListByAsync(Expression<Func<T, bool>> where, bool readOnly = true, params Expression<Func<T, object>>[] includes)
-        {
-            return await Queryable(readOnly, includes).Where(where).ToListAsync();
+            await context.SaveChangesAsync();
         }
 
         private IQueryable<T> Include(IQueryable<T> query, params Expression<Func<T, object>>[] includes)

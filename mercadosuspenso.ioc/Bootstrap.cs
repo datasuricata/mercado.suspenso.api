@@ -22,6 +22,11 @@ namespace mercadosuspenso.ioc
 
             services.AddTransient<IParticipanteService, ParticipanteService>();
             services.AddTransient<IDistribuidorService, DistribuidorService>();
+            services.AddTransient<IVarejistaService, VarejistaService>();
+            services.AddTransient<IAutenticacaoService, AutenticacaoService>();
+            services.AddTransient<IEstoqueService, EstoqueService>();
+            services.AddTransient<IVinculoService, VinculoService>();
+            services.AddTransient<ISmtpService, SendGridSmtpService>();
         }
     }
 }

@@ -21,6 +21,7 @@ namespace mercadosuspenso.api
         {
             services.AddBoostrap();
             services.AddProtectedControllers();
+            services.AddConfiguration();
             services.AddSwagger();
             services.AddAuth();
         }

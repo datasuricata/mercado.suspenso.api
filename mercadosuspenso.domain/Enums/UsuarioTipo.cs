@@ -4,6 +4,6 @@
     {
         Varejo = 1,
         Distribuidor = 2,
-        Administrador = 3,
+        Administrador = 99,
     }
 }

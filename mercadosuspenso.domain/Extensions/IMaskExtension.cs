@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Text.RegularExpressions;
 
 namespace mercadosuspenso.domain.Extensions
 {
@@ -12,6 +11,11 @@ namespace mercadosuspenso.domain.Extensions
                 return value;
 
             return value.Replace(".", string.Empty).Replace("-", string.Empty).Replace("/", string.Empty);
+        }
+
+        public static string CleanStripHTML(this string input)
+        {
+            return Regex.Replace(input, "<.*?>", String.Empty);
         }
     }
 }

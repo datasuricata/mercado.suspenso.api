@@ -6,6 +6,11 @@ namespace mercadosuspenso.domain.Models
 {
     public class Usuario : Entity
     {
+        public Usuario(UsuarioTipo tipo)
+        {
+            Tipo = tipo;             
+        }
+
         public Usuario(string email, string senha)
         {
             Senha = senha.EncryptToMD5();
@@ -26,12 +31,12 @@ namespace mercadosuspenso.domain.Models
 
         public void Validar()
         {
-            Assert Quando = Domain.Validate;
+            Assert Valida = DomainException.Validate;
 
-            Quando(string.IsNullOrEmpty(Email), "E-mail é obrigatório");
-            Quando(!Email.Contains("@"), "E-mail inválido");
-            Quando(string.IsNullOrEmpty(Senha), "Informe uma senha é obrigatória");
-            Quando(Senha.Length < 6, "Senha fraca, escolha uma senha melhor");
+            Valida(string.IsNullOrEmpty(Email), "E-mail é obrigatório");
+            Valida(!Email.Contains("@"), "E-mail inválido");
+            Valida(string.IsNullOrEmpty(Senha), "Informe uma senha é obrigatória");
+            Valida(Senha.Length < 6, "Senha fraca, escolha uma senha melhor");
         }
     }
 }

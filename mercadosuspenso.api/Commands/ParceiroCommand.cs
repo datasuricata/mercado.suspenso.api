@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace mercadosuspenso.api.Commands
+﻿namespace mercadosuspenso.api.Commands
 {
-    public class DistribuidorCommand
+    public class ParceiroCommand
     {
         public string RazaoSocial { get; set; }
         public string Representante { get; set; }

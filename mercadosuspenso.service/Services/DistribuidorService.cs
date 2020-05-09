@@ -1,9 +1,13 @@
-﻿using mercadosuspenso.domain.Enums;
+﻿using mercadosuspenso.domain.Dtos;
+using mercadosuspenso.domain.Enums;
 using mercadosuspenso.domain.Exceptions;
-using mercadosuspenso.domain.Extensions;
 using mercadosuspenso.domain.Interfaces.Services;
 using mercadosuspenso.domain.Models;
+using mercadosuspenso.domain.Security;
 using mercadosuspenso.orm.Repository;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -13,57 +17,85 @@ namespace mercadosuspenso.service.Services
     public class DistribuidorService : IDistribuidorService
     {
         private delegate void Assert(bool error, string message);
+        private Assert Validar = DomainException.Validate;
 
+        private readonly ISmtpService smtp;
         private readonly IRepository<Distribuidor> repository;
-        private readonly ClaimsPrincipal logged;
+        private readonly ClaimsPrincipal me;
 
-        public DistribuidorService(IPrincipal principal, IRepository<Distribuidor> repository)
+        public DistribuidorService(ISmtpService smtp, IPrincipal principal, IRepository<Distribuidor> repository)
         {
+            this.smtp = smtp;
             this.repository = repository;
-            this.logged = (ClaimsPrincipal)principal;
+            this.me = (ClaimsPrincipal)principal;
         }
 
-        public async Task AdicionarAsync(string razaoSocial, string nome, string cnpj, string telefone, string email, string senha)
+        public async Task AdicionarAsync(string razaoSocial, string representante, string cnpj, string telefone, string email, string senha)
         {
-            var distribuidor = new Distribuidor(razaoSocial, nome, cnpj, telefone)
+            var distribuidor = new Distribuidor(razaoSocial, representante, cnpj, telefone)
             {
                 Usuario = new Usuario(email, senha),
             };
+
+            distribuidor.Usuario.DefinirTipo(UsuarioTipo.Distribuidor);
 
             var registrado = await repository.ByAsync(p => p.Ativo && p.Cnpj == distribuidor.Cnpj);
 
             if (registrado != null)
             {
-                Assert Quando = Domain.Validate;
+                Validar(registrado.Status == RegistroStatus.Recusado,
+                    "Existem algum problema com seu cadastro, contate o suporte");
 
-                Quando(registrado.Status == RegistroStatus.Refused, "Existem algum problema com seu cadastro, contate o suporte");
-
-                Quando(registrado != null, "Já um cadastro processado ou pendente com estes dados");
+                Validar(registrado != null,
+                    "Já um cadastro processado ou pendente com estes dados");
             }
 
             await repository.InsertAsync(distribuidor);
+
+            await smtp.EnviarAsync(smtp.BoasVindas(email, representante));
         }
 
-        public async Task AprovarRecusarAsync(string cnpj)
+        public async Task AtualizarAsync(string razaoSocial, string representante, string cnpj, string telefone)
         {
-            var distribuidor = await repository.ByAsync(p => p.Ativo && p.Cnpj == cnpj.CleanFormat(), false);
+            var id = me.FindFirst(ClaimsConstant.Id).Value;
 
-            if (distribuidor.Status == RegistroStatus.Aproved)
+            var distribuidor = await repository.ByAsync(c => c.UsuarioId == id, false);
+
+            Validar(distribuidor == null,
+                "Usuário não encontrado, talvez a sessão tenha expirado, tente logar novamente");
+
+            distribuidor.RazaoSocial = razaoSocial;
+            distribuidor.Representante = representante;
+            distribuidor.Cnpj = cnpj;
+            distribuidor.Telefone = telefone;
+
+            await repository.UpdateAsync(distribuidor);
+        }
+
+        public async Task AprovarRecusarAsync(string id)
+        {
+            var distribuidor = await repository.ByAsync(p => p.Ativo && p.Id == id, false, i => i.Usuario);
+
+            if (distribuidor.Status == RegistroStatus.Aprovado)
             {
                 distribuidor.Recusar();
             }
-            if (distribuidor.Status == RegistroStatus.Pendent || distribuidor.Status == RegistroStatus.Refused)
+            if (distribuidor.Status == RegistroStatus.Pendente || distribuidor.Status == RegistroStatus.Recusado)
             {
                 distribuidor.Aprovar();
             }
+
+            await smtp.EnviarAsync(smtp.AprovaReprova(distribuidor.Usuario?.Email, distribuidor.Status));
         }
 
         public async Task AdicionarOuAlterarEnderecoLogadoAsync(string cep, string logradouro, string numero, string complemento, string bairro, string cidade, string estado)
         {
-            //var id = logged.FindFirst(ClaimsConstant.Id).Value;
-            var id = default(string);
+            var id = me.FindFirst(ClaimsConstant.Id).Value;
 
             var distribuidor = await repository.ByAsync(c => c.UsuarioId == id, false);
+
+            Validar(distribuidor == null,
+                "Usuário não encontrado, talvez a sessão tenha expirado, tente logar novamente");
 
             if (distribuidor.Endereco is null)
             {
@@ -83,6 +115,46 @@ namespace mercadosuspenso.service.Services
             }
 
             await repository.UpdateAsync(distribuidor);
+        }
+
+        public async Task<EntidadeDto> PorIdAsync(string id)
+        {
+            var entidade = await repository.ByIdAsync(id);
+
+            return EntidadeDto.From(entidade);
+        }
+
+        public async Task<EntidadeDto> MeusDadosAsync()
+        {
+            var id = me.FindFirst(ClaimsConstant.Id).Value;
+
+            Validar(string.IsNullOrEmpty(id),
+               "Usuário não encontrado, talvez a sessão tenha expirado, tente logar novamente");
+
+            var entidade = await repository.ByAsync
+            (
+                distribuidor => 
+                distribuidor.Id == id
+            );
+
+            return EntidadeDto.From(entidade);
+        }
+
+        public async Task<IEnumerable<ContadorDto>> TotalAsync()
+        {
+            return await repository.Queryable(true).GroupBy(x => x.Status).Select(a => new ContadorDto
+            {
+                Titulo = $"Distribuidores com status {a.Key.ToString().ToLower()}",
+                Status = a.Key.ToString(),
+                Total = a.Count(/*s => s.Status == a.Key*/),
+            }).ToListAsync();
+        }
+
+        public async Task<IEnumerable<EntidadeDto>> ListarPorStatusAsync(RegistroStatus status)
+        {
+            var entidades =  await repository.ListByAsync(c => c.Status == status, noTracking: true);
+
+            return entidades.OrderBy(a => a.CriadoEm).Select(EntidadeDto.From);
         }
     }
 }

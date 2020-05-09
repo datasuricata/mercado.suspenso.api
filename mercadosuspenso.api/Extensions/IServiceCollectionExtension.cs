@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using mercadosuspenso.api.Providers;
+using mercadosuspenso.domain.Interfaces.Providers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -6,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SendGrid;
 using System;
 using System.Collections.Generic;
 using System.Security.Principal;
@@ -50,18 +53,19 @@ namespace mercadosuspenso.api.Extensions
 
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "Mercado Suspenso API",
+                    Title = "Alimento Suspenso API",
                     Version = "v1",
-                    Description = "Documentação de endpoints do projeto mercado suspenso com padrões Rest",
+                    Description = "Documentação de endpoints do projeto +alimento suspenso",
                     Contact = new OpenApiContact
                     {
                         Name = "Contate o desenvolvedor",
                         Url = new Uri("https://datasuricata.github.io/"),
+                        Email = "lucas.moraes@datasuricata.com.br",
                     },
                     License = new OpenApiLicense
                     {
                         Name = "Informações de licensa",
-                        Url = new Uri("https://amorsuspenso.com.br/termosdelicenca")
+                        Url = new Uri("https://alimentocuritiba.com.br/termo")
                     }
                 });
 
@@ -73,6 +77,8 @@ namespace mercadosuspenso.api.Extensions
 
         public static IServiceCollection AddAuth(this IServiceCollection services)
         {
+            services.AddTransient<IAuthenticationProvider, AuthenticationProvider>();
+
             var config = services.BuildServiceProvider().GetService<IConfiguration>();
 
             var key = Encoding.ASCII.GetBytes(config["SecurityKey"]);
@@ -84,19 +90,27 @@ namespace mercadosuspenso.api.Extensions
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-                .AddJwtBearer(x =>
+            }).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    x.RequireHttpsMetadata = false;
-                    x.SaveToken = true;
-                    x.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(key),
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                    };
-                });
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                };
+            });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("stockist", policy => policy.RequireRole("STOCKIST"));
+                options.AddPolicy("dispenser", policy => policy.RequireRole("DISPENSER"));
+                options.AddPolicy("retailer", policy => policy.RequireRole("RETAILER"));
+                options.AddPolicy("management", policy => policy.RequireRole("MANAGEMENT"));
+                options.AddPolicy("reports", policy => policy.RequireRole("REPORTS"));
+            });
 
             return services;
         }
@@ -112,6 +126,15 @@ namespace mercadosuspenso.api.Extensions
 
                 config.Filters.Add(new AuthorizeFilter(policy));
             });
+
+            return services;
+        }
+
+        public static IServiceCollection AddConfiguration(this IServiceCollection services)
+        {
+            var config = services.BuildServiceProvider().GetService<IConfiguration>();
+
+            services.AddScoped<ISendGridClient>(x => new SendGridClient(config["SENDGRID_API_KEY"]));
 
             return services;
         }

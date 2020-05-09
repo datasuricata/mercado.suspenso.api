@@ -32,7 +32,7 @@ namespace mercadosuspenso.domain.Models
 
         public void Validar()
         {
-            Assert Quando = Domain.Validate;
+            Assert Quando = DomainException.Validate;
 
             Quando(string.IsNullOrEmpty(Cep), "Informe o Cep");
             Quando(string.IsNullOrEmpty(Logradouro), "Informe o endereço do logradouro");

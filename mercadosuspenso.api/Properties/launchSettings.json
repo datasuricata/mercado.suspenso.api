@@ -14,7 +14,8 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SENDGRID_API_KEY": "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"
       }
     },
     "mercadosuspenso.api": {

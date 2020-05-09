@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using mercadosuspenso.domain.Exceptions;
+using System.Collections.Generic;
 
 namespace mercadosuspenso.domain.Models
 {
@@ -9,6 +10,8 @@ namespace mercadosuspenso.domain.Models
             Cpf = cpf;
             Detalhes = detalhes;
             VarejistaId = varejistaId;
+
+            Validar();
         }
 
         protected Doacao()
@@ -20,5 +23,11 @@ namespace mercadosuspenso.domain.Models
         public string VarejistaId { get; set; }
 
         public ICollection<DoacaoProduto> DoacaoProdutos { get; set; } = new HashSet<DoacaoProduto>();
+
+        public void Validar()
+        {
+            Assert Quando = DomainException.Validate;
+            Quando(string.IsNullOrEmpty(VarejistaId), "Varejista deve ser informado");
+        }
     }
 }

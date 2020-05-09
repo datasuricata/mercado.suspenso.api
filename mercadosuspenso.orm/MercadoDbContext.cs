@@ -10,16 +10,16 @@ namespace mercadosuspenso.orm
 {
     public class MercadoDbContext : DbContext
     {
-
-        DbSet<Vistoria> Vistoria { get; set; }
-        DbSet<Distribuidor> Distribuidor { get; set; }
-        DbSet<Doacao> Doacao { get; set; }
-        DbSet<DoacaoProduto> DoacaoProduto { get; set; }
-        DbSet<Produto> Produto { get; set; }
-        DbSet<Endereco> Endereco { get; set; }
-        DbSet<Participante> Participante { get; set; }
-        DbSet<Usuario> Usuario { get; set; }
-        DbSet<Varejista> Varejista { get; set; }
+        public DbSet<Vinculo> Vinculo { get; set; }
+        public DbSet<Vistoria> Vistoria { get; set; }
+        public DbSet<Distribuidor> Distribuidor { get; set; }
+        public DbSet<Doacao> Doacao { get; set; }
+        public DbSet<DoacaoProduto> DoacaoProduto { get; set; }
+        public DbSet<Produto> Produto { get; set; }
+        public DbSet<Endereco> Endereco { get; set; }
+        public DbSet<Participante> Participante { get; set; }
+        public DbSet<Usuario> Usuario { get; set; }
+        public DbSet<Varejista> Varejista { get; set; }
 
         public MercadoDbContext(DbContextOptions options) : base(options)
         {
@@ -29,6 +29,7 @@ namespace mercadosuspenso.orm
         {
             builder.UseDeleteCascadeOff();
             builder.UseAssemblyMapping();
+            builder.UseDataSeeder();
 
             #region - map -
 

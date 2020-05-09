@@ -4,7 +4,7 @@ namespace mercadosuspenso.domain.Models
 {
     public class Produto : Entity
     {
-        public Produto(int quantidade, string nome, string codigo)
+        public Produto(decimal quantidade, string nome, string codigo)
         {
             Quantidade = quantidade;
             Nome = nome;
@@ -15,7 +15,7 @@ namespace mercadosuspenso.domain.Models
         {
         }
 
-        public int Quantidade { get; set; }
+        public decimal Quantidade { get; set; }
         public string Nome { get; set; }
         public string Codigo { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using mercadosuspenso.domain.Exceptions;
+﻿using mercadosuspenso.domain.Dtos;
+using mercadosuspenso.domain.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
@@ -23,7 +24,7 @@ namespace mercadosuspenso.api.Middlewares
             }
             catch (Exception ex)
             {
-                var isDomainException = ex is Domain;
+                var isDomainException = ex is DomainException;
 
                 var statusCode = isDomainException ? 400 : 500;
 
@@ -31,7 +32,7 @@ namespace mercadosuspenso.api.Middlewares
 
                 var result = JsonConvert.SerializeObject
                 (
-                    new { Status = statusCode, Message = message }
+                    new ProblemDto { StatusCode = statusCode, Message = message }
                 );
 
                 context.Response.ContentType = "application/json";

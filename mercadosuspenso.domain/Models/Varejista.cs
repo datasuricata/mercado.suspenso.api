@@ -25,25 +25,28 @@ namespace mercadosuspenso.domain.Models
         public string Telefone { get; set; }
         public bool Parceiro { get; set; }
         public RegistroStatus Status { get; set; }
-
         public string EnderecoId { get; set; }
         public Endereco Endereco { get; set; }
-
         public string UsuarioId { get; set; }
         public Usuario Usuario { get; set; }
 
-        public void Aprova() => Status = RegistroStatus.Aproved;
+        public void Aprovar() => Status = RegistroStatus.Aprovado;
 
-        public void Recusa() => Status = RegistroStatus.Refused;
+        public void Recusar() => Status = RegistroStatus.Recusado;
 
         public void Validate()
         {
-            Assert When = Domain.Validate;
+            Assert When = DomainException.Validate;
 
             When(string.IsNullOrEmpty(Representante), "Nome do representante legal é obrigatório");
             When(string.IsNullOrEmpty(Cnpj), "Cnpj deve ser informado");
             When(string.IsNullOrEmpty(RazaoSocial), "Razão Social deve ser informada");
             When(Cnpj.Length != 14, "Cnpj inválido");
+        }
+
+        public override string ToString()
+        {
+            return $"{RazaoSocial} - {Endereco.Logradouro}, {Endereco.Numero}";
         }
     }
 }

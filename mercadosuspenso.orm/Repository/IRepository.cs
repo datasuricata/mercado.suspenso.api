@@ -15,7 +15,7 @@ namespace mercadosuspenso.orm.Repository
 
         bool Exist(Func<T, bool> where, params Expression<Func<T, object>>[] includes);
 
-        Task<T> ByIdAsync(string id, bool readOnly = true, params Expression<Func<T, object>>[] includes);
+        Task<T> ByIdAsync(string id, bool noTracking = true, params Expression<Func<T, object>>[] includes);
 
         Task<T> ByAsync(Expression<Func<T, bool>> where, bool readOnly = true, params Expression<Func<T, object>>[] includes);
 
@@ -23,8 +23,8 @@ namespace mercadosuspenso.orm.Repository
 
         Task InsertRangeAsync(IEnumerable<T> entities);
 
-        Task<IEnumerable<T>> ListAsync(bool readOnly = true, params Expression<Func<T, object>>[] includes);
+        Task<IEnumerable<T>> ListAsync(bool noTracking = true, params Expression<Func<T, object>>[] includes);
 
-        Task<IEnumerable<T>> ListByAsync(Expression<Func<T, bool>> where, bool readOnly = true, params Expression<Func<T, object>>[] includes);
+        Task<IEnumerable<T>> ListByAsync(Expression<Func<T, bool>> where, bool noTracking = true, params Expression<Func<T, object>>[] includes);
     }
 }

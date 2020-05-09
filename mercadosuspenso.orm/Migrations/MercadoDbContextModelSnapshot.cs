@@ -62,6 +62,34 @@ namespace mercadosuspenso.orm.Migrations
                     b.HasIndex("UsuarioId");
 
                     b.ToTable("Distribuidor");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "cf936849e0b244a2a6a812c15d69390d",
+                            Ativo = true,
+                            Cnpj = "46992525000151",
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 4, 17, 58, 25, 919, DateTimeKind.Unspecified).AddTicks(247), new TimeSpan(0, 0, 0, 0, 0)),
+                            EnderecoId = "eff3b1b9b3b742a6b5ba4fffdf99585e",
+                            RazaoSocial = "Luiza e Jennifer Restaurante Ltda",
+                            Representante = "Jennifer Rocha",
+                            Status = 0,
+                            Telefone = "1129551395",
+                            UsuarioId = "7d5ea14a85ba4af7a4ca4c95545f3545"
+                        },
+                        new
+                        {
+                            Id = "189be3c445504dcf9d8559959579035e",
+                            Ativo = true,
+                            Cnpj = "99270944000146",
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 4, 17, 58, 25, 919, DateTimeKind.Unspecified).AddTicks(6714), new TimeSpan(0, 0, 0, 0, 0)),
+                            EnderecoId = "5d2387e4b93f476c81dd1bb757b27f43",
+                            RazaoSocial = "LAndré e Mateus Pizzaria Delivery Ltda",
+                            Representante = "Carlos Matues",
+                            Status = 0,
+                            Telefone = "1128810961",
+                            UsuarioId = "2580868e52444603b4d75fdf92f7f916"
+                        });
                 });
 
             modelBuilder.Entity("mercadosuspenso.domain.Models.Doacao", b =>
@@ -147,6 +175,60 @@ namespace mercadosuspenso.orm.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Endereco");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "eff3b1b9b3b742a6b5ba4fffdf99585e",
+                            Ativo = true,
+                            Bairro = "Centro",
+                            Cep = "04747110",
+                            Cidade = "São Paulo",
+                            Complemento = "SALA 02",
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 4, 17, 58, 25, 917, DateTimeKind.Unspecified).AddTicks(9627), new TimeSpan(0, 0, 0, 0, 0)),
+                            Estado = "SP",
+                            Logradouro = "Rua Santo Aristides",
+                            Numero = "23"
+                        },
+                        new
+                        {
+                            Id = "5d2387e4b93f476c81dd1bb757b27f43",
+                            Ativo = true,
+                            Bairro = "Indianópolis",
+                            Cep = "04028003",
+                            Cidade = "São Paulo",
+                            Complemento = "Conj. 01",
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 4, 17, 58, 25, 918, DateTimeKind.Unspecified).AddTicks(6998), new TimeSpan(0, 0, 0, 0, 0)),
+                            Estado = "SP",
+                            Logradouro = "Avenida Ibirapuera",
+                            Numero = "334"
+                        },
+                        new
+                        {
+                            Id = "010bafef4b7342bda843d22b1ec9d7c2",
+                            Ativo = true,
+                            Bairro = "Sitio dos Vianas",
+                            Cep = "09171686",
+                            Cidade = "São Paulo",
+                            Complemento = "02",
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 4, 17, 58, 25, 918, DateTimeKind.Unspecified).AddTicks(7126), new TimeSpan(0, 0, 0, 0, 0)),
+                            Estado = "SP",
+                            Logradouro = "Rua Santa Adélia",
+                            Numero = "35"
+                        },
+                        new
+                        {
+                            Id = "39f3a4d569ea400f848dd71deed5eb82",
+                            Ativo = true,
+                            Bairro = "Centro",
+                            Cep = "80020040",
+                            Cidade = "Curitiba",
+                            Complemento = "32",
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 4, 17, 58, 25, 918, DateTimeKind.Unspecified).AddTicks(7133), new TimeSpan(0, 0, 0, 0, 0)),
+                            Estado = "PR",
+                            Logradouro = "Muricy 73",
+                            Numero = "32"
+                        });
                 });
 
             modelBuilder.Entity("mercadosuspenso.domain.Models.Participante", b =>
@@ -187,6 +269,42 @@ namespace mercadosuspenso.orm.Migrations
                     b.HasIndex("EnderecoId");
 
                     b.ToTable("Participante");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "e942c6f6c1364447a584a8f2fee583c2",
+                            Ativo = true,
+                            Cpf = "09316578980",
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 4, 17, 58, 25, 920, DateTimeKind.Unspecified).AddTicks(5671), new TimeSpan(0, 0, 0, 0, 0)),
+                            EnderecoId = "39f3a4d569ea400f848dd71deed5eb82",
+                            Nome = "Luiz Inacio",
+                            Rg = "5243518",
+                            Status = 0,
+                            Telefone = "41994643417"
+                        },
+                        new
+                        {
+                            Id = "816e1eb79d7d4863a953f77e9d8a2347",
+                            Ativo = true,
+                            Cpf = "09316558980",
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 4, 17, 58, 25, 921, DateTimeKind.Unspecified).AddTicks(932), new TimeSpan(0, 0, 0, 0, 0)),
+                            Nome = "Carlos Gabriel",
+                            Rg = "3243518",
+                            Status = 0,
+                            Telefone = "41595653717"
+                        },
+                        new
+                        {
+                            Id = "02ee3c7582ea47a0a8105e9a8e9764bc",
+                            Ativo = true,
+                            Cpf = "09316573980",
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 4, 17, 58, 25, 921, DateTimeKind.Unspecified).AddTicks(1333), new TimeSpan(0, 0, 0, 0, 0)),
+                            Nome = "Amanda Mendez",
+                            Rg = "1243518",
+                            Status = 0,
+                            Telefone = "41696663717"
+                        });
                 });
 
             modelBuilder.Entity("mercadosuspenso.domain.Models.Produto", b =>
@@ -210,8 +328,8 @@ namespace mercadosuspenso.orm.Migrations
                     b.Property<string>("Nome")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Quantidade")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Quantidade")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -245,6 +363,62 @@ namespace mercadosuspenso.orm.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Usuario");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "d87e4de503984cfd8b282616ba50b42f",
+                            Ativo = true,
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 4, 17, 58, 25, 891, DateTimeKind.Unspecified).AddTicks(1660), new TimeSpan(0, 0, 0, 0, 0)),
+                            Email = "lucas.moraes@datasuricata.com.br",
+                            Senha = "C3F21A70DFB5072C152691AF019CC68A",
+                            Tipo = 99
+                        },
+                        new
+                        {
+                            Id = "e0176f9f9b0445de83411b404e68a311",
+                            Ativo = true,
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 4, 17, 58, 25, 891, DateTimeKind.Unspecified).AddTicks(3925), new TimeSpan(0, 0, 0, 0, 0)),
+                            Email = "equipegkio@gmail.com",
+                            Senha = "2D27FE16A2DE63872DDEC0BAFFB473BC",
+                            Tipo = 99
+                        },
+                        new
+                        {
+                            Id = "c9f9cd17020c4bfaa83f7c53e5f9b278",
+                            Ativo = true,
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 4, 17, 58, 25, 891, DateTimeKind.Unspecified).AddTicks(3985), new TimeSpan(0, 0, 0, 0, 0)),
+                            Email = "web.admin@mailinator.com",
+                            Senha = "6C5F89C867E08F99BE95D3CBA4B88594",
+                            Tipo = 99
+                        },
+                        new
+                        {
+                            Id = "7d5ea14a85ba4af7a4ca4c95545f3545",
+                            Ativo = true,
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 4, 17, 58, 25, 891, DateTimeKind.Unspecified).AddTicks(4715), new TimeSpan(0, 0, 0, 0, 0)),
+                            Email = "jeniffer.restaurante@restaurante.com",
+                            Senha = "E10ADC3949BA59ABBE56E057F20F883E",
+                            Tipo = 2
+                        },
+                        new
+                        {
+                            Id = "2580868e52444603b4d75fdf92f7f916",
+                            Ativo = true,
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 4, 17, 58, 25, 916, DateTimeKind.Unspecified).AddTicks(3493), new TimeSpan(0, 0, 0, 0, 0)),
+                            Email = "carlos@pizzaria.com",
+                            Senha = "E10ADC3949BA59ABBE56E057F20F883E",
+                            Tipo = 2
+                        },
+                        new
+                        {
+                            Id = "4bea229e5b5a4d66a75d1d248f7dc2d5",
+                            Ativo = true,
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 4, 17, 58, 25, 916, DateTimeKind.Unspecified).AddTicks(3900), new TimeSpan(0, 0, 0, 0, 0)),
+                            Email = "olivia@noturna.com.br",
+                            Senha = "E10ADC3949BA59ABBE56E057F20F883E",
+                            Tipo = 1
+                        });
                 });
 
             modelBuilder.Entity("mercadosuspenso.domain.Models.Varejista", b =>
@@ -293,6 +467,73 @@ namespace mercadosuspenso.orm.Migrations
                     b.HasIndex("UsuarioId");
 
                     b.ToTable("Varejista");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "eeb45a8bc09e422dbfd45b456a78f878",
+                            Ativo = true,
+                            Cnpj = "18904128000145",
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 4, 17, 58, 25, 919, DateTimeKind.Unspecified).AddTicks(9366), new TimeSpan(0, 0, 0, 0, 0)),
+                            EnderecoId = "010bafef4b7342bda843d22b1ec9d7c2",
+                            Parceiro = false,
+                            RazaoSocial = "Olivia e Raimundo Casa Noturna ME",
+                            Representante = "Oliveira Moraes",
+                            Status = 0,
+                            Telefone = "1125262748",
+                            UsuarioId = "4bea229e5b5a4d66a75d1d248f7dc2d5"
+                        });
+                });
+
+            modelBuilder.Entity("mercadosuspenso.domain.Models.Vinculo", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(32)")
+                        .HasMaxLength(32);
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("AtualizadoEm")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("CriadoEm")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DistribuidorId")
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<string>("UsuarioId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VarejistaId")
+                        .HasColumnType("nvarchar(32)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DistribuidorId");
+
+                    b.HasIndex("VarejistaId");
+
+                    b.ToTable("Vinculo");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "c1f1234491324047a5e215628aad362a",
+                            Ativo = true,
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 4, 17, 58, 25, 921, DateTimeKind.Unspecified).AddTicks(5160), new TimeSpan(0, 0, 0, 0, 0)),
+                            DistribuidorId = "cf936849e0b244a2a6a812c15d69390d",
+                            VarejistaId = "eeb45a8bc09e422dbfd45b456a78f878"
+                        },
+                        new
+                        {
+                            Id = "65502ecff9b04e4ab5fd3e9ebec6f76e",
+                            Ativo = true,
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 4, 17, 58, 25, 921, DateTimeKind.Unspecified).AddTicks(7434), new TimeSpan(0, 0, 0, 0, 0)),
+                            DistribuidorId = "189be3c445504dcf9d8559959579035e",
+                            VarejistaId = "eeb45a8bc09e422dbfd45b456a78f878"
+                        });
                 });
 
             modelBuilder.Entity("mercadosuspenso.domain.Models.Vistoria", b =>
@@ -384,6 +625,17 @@ namespace mercadosuspenso.orm.Migrations
                     b.HasOne("mercadosuspenso.domain.Models.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioId");
+                });
+
+            modelBuilder.Entity("mercadosuspenso.domain.Models.Vinculo", b =>
+                {
+                    b.HasOne("mercadosuspenso.domain.Models.Distribuidor", "Distribuidor")
+                        .WithMany()
+                        .HasForeignKey("DistribuidorId");
+
+                    b.HasOne("mercadosuspenso.domain.Models.Varejista", "Varejista")
+                        .WithMany()
+                        .HasForeignKey("VarejistaId");
                 });
 
             modelBuilder.Entity("mercadosuspenso.domain.Models.Vistoria", b =>

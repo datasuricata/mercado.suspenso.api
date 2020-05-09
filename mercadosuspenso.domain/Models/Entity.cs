@@ -1,5 +1,4 @@
-﻿using mercadosuspenso.domain.Exceptions;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace mercadosuspenso.domain.Models
