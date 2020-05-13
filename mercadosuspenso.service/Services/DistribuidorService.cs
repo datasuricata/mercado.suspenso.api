@@ -6,8 +6,10 @@ using mercadosuspenso.domain.Models;
 using mercadosuspenso.domain.Security;
 using mercadosuspenso.orm.Repository;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -142,12 +144,13 @@ namespace mercadosuspenso.service.Services
 
         public async Task<IEnumerable<ContadorDto>> TotalAsync()
         {
-            return await repository.Queryable(true).GroupBy(x => x.Status).Select(a => new ContadorDto
-            {
-                Titulo = $"Distribuidores com status {a.Key.ToString().ToLower()}",
-                Status = a.Key.ToString(),
-                Total = a.Count(/*s => s.Status == a.Key*/),
-            }).ToListAsync();
+            return await repository.Queryable(noTracking: true)
+                .Where(x => x.Ativo).GroupBy(x => x.Status).Select(a => new ContadorDto
+                {
+                    Titulo = $"Distribuidores com status {a.Key.ToString().ToLower()}",
+                    Status = a.Key.ToString(),
+                    Total = a.Count(/*s => s.Status == a.Key*/),
+                }).ToListAsync();
         }
 
         public async Task<IEnumerable<EntidadeDto>> ListarPorStatusAsync(RegistroStatus status)

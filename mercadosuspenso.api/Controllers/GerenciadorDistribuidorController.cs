@@ -26,14 +26,14 @@ namespace mercadosuspenso.api.Controllers
             this.distribuidorService = distribuidorService;
         }
 
-        [HttpGet]
-        [SwaggerOperation(Summary = "Listagem de distribuidores", Description = "Listagem distribuidores cadastrado na base")]
+        [HttpGet("{status}")]
+        [SwaggerOperation(Summary = "Listagem de distribuidores", Description = "Listagem de distribuidores cadastrado na base por status (pendente = 0, ativo = 1, recusado = 2)")]
         [SwaggerResponse(200, "Sucesso", type: typeof(IEnumerable<EntidadeDto>))]
         [SwaggerResponse(400, "Dados inválidos", type: typeof(ProblemDto))]
         [SwaggerResponse(403, "Não permitido", type: typeof(ProblemDto))]
-        public async Task<IActionResult> Listar()
+        public async Task<IActionResult> Listar(RegistroStatus status)
         {
-            var dto = await distribuidorService.ListAsync();
+            var dto = await distribuidorService.ListarPorStatusAsync(status);
 
             return Ok(dto);
         }

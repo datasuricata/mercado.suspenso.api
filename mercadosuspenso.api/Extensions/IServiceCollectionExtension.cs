@@ -53,7 +53,7 @@ namespace mercadosuspenso.api.Extensions
 
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "Alimento Suspenso API",
+                    Title = "API REST +Alimento Suspenso",
                     Version = "v1",
                     Description = "Documentação de endpoints do projeto +alimento suspenso",
                     Contact = new OpenApiContact

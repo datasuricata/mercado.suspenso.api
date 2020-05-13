@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
@@ -44,7 +45,7 @@ namespace mercadosuspenso.service.Services
         public async Task<ProcessamentoDto> EntradaAsync(string chave, int versao, int ambiente, int identificador, string hash)
         {
             var varejistaId = me.FindFirst(ClaimsConstant.Id).Value;
-
+            var recipiente = default(Vinculo);
             bool sucesso = true;
             string mensagem = default;
             var doacaoProdutos = new List<DoacaoProduto>();
@@ -64,13 +65,41 @@ namespace mercadosuspenso.service.Services
                 Validar(varejista.Status != RegistroStatus.Aprovado,
                     "Loja pendente de ativação, contate o suporte");
 
-                var recipentes = await context.Vinculo
+                recipiente = await context.Vinculo
                     .Include(i => i.Distribuidor)
                     .Include(i => i.Distribuidor.Usuario)
-                    .Where(vinculo => vinculo.Ativo && vinculo.VarejistaId == varejistaId && vinculo.Distribuidor.Status == RegistroStatus.Aprovado)
-                    .AsNoTracking().ToListAsync();
+                    .Join
+                    (
+                        context.Vistoria.Include(i => i.Doacao),
+                        vinculo => vinculo.DistribuidorId,
+                        vistoria => vistoria.DistribudidorId, (vinculo, vistoria) => new { vinculo, vistoria }
+                    )
+                    .OrderBy(o => o.vistoria.CriadoEm).Select(s => s.vinculo)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync
+                    (
+                        vinculo =>
+                        vinculo.Ativo &&
+                        vinculo.VarejistaId == varejistaId &&
+                        vinculo.Distribuidor.Status == RegistroStatus.Aprovado
+                    );
 
-                Validar(recipentes == null,
+                if (recipiente == null)
+                {
+                    recipiente = await context.Vinculo
+                        .Include(i => i.Distribuidor)
+                        .Include(i => i.Distribuidor.Usuario)
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync
+                        (
+                            vinculo =>
+                            vinculo.Ativo &&
+                            vinculo.VarejistaId == varejistaId &&
+                            vinculo.Distribuidor.Status == RegistroStatus.Aprovado
+                        );
+                }
+
+                Validar(recipiente == null,
                     "Não existe nenhum distribuidor aprovado vinculado a sua loja, contate o suporte");
 
                 var produtos = await CarregarNotaFiscalAsync(chave, versao, ambiente, identificador, hash);
@@ -91,20 +120,14 @@ namespace mercadosuspenso.service.Services
                 await context.Vistoria.AddAsync(vistoria);
 
                 foreach (var produto in produtos)
-                {
                     doacaoProdutos.Add(new DoacaoProduto(doacao, produto));
-                }
 
                 await context.DoacaoProduto.AddRangeAsync(doacaoProdutos);
                 await context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                foreach(var r in recipentes)
-                {
-                    var email = r.Distribuidor.Usuario.Email;
-
-                    await smtp.EnviarAsync(smtp.ResgateDoacao(email, varejista.ToString(), vistoria.Hash));
-                }
+                var email = recipiente.Distribuidor.Usuario.Email;
+                await smtp.EnviarAsync(smtp.ResgateDoacao(email, varejista.ToString(), vistoria.Hash));
             }
             catch (Exception)
             {
@@ -123,7 +146,6 @@ namespace mercadosuspenso.service.Services
 
         public async Task ResgatarAsync(string rastreio, string cnpj)
         {
-            //todo passar para a camada de serviço correta
             var vistoria = await context.Vistoria.FirstOrDefaultAsync
             (
                 vistoria =>
@@ -137,7 +159,6 @@ namespace mercadosuspenso.service.Services
             Validar(vistoria.Status != VistoriaStatus.Entrada,
                 "Produtos já receberam a retirada do estoque");
 
-            //todo passar para a camada de serviço correta
             var distribuidor = await context.Distribuidor.AsNoTracking().FirstOrDefaultAsync
             (
                 distribuidor =>
@@ -196,9 +217,16 @@ namespace mercadosuspenso.service.Services
             await context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<ContadorDto>> TotalAsync()
+        public async Task<IEnumerable<ContadorDto>> TotalAsync(string distribuidorId)
         {
-            return await context.Vistoria.AsQueryable().GroupBy(a => a.Status).Select(a => new ContadorDto
+            var expression = default(Expression<Func<Vistoria, bool>>);
+
+            if (!string.IsNullOrEmpty(distribuidorId))
+                expression = x => x.Ativo && x.DistribudidorId == distribuidorId;
+            else
+                expression = x => x.Ativo;
+
+            return await context.Vistoria.AsQueryable().Where(expression).GroupBy(a => a.Status).Select(a => new ContadorDto
             {
                 Titulo = $"Doações com status {a.Key.ToString().ToLower()}",
                 Status = a.Key.ToString(),
@@ -206,18 +234,18 @@ namespace mercadosuspenso.service.Services
             }).ToListAsync();
         }
 
-        public async Task<IEnumerable<DoacaoDto>> EstoquePorVarejistaIdAsync(string id)
+        public async Task<IEnumerable<DoacaoDto>> EstoquePorVarejistaIdAsync(string varejistaId)
         {
             var doacoes = await context.Doacao.Include(a => a.DoacaoProdutos).ThenInclude(a => a.Produto)
-                .Where(w => w.VarejistaId == id).AsNoTracking().ToListAsync();
+                .Where(w => w.VarejistaId == varejistaId).AsNoTracking().ToListAsync();
 
             return doacoes.Select(DoacaoDto.From);
         }
 
-        public async Task<IEnumerable<DoacaoDto>> EstoquePorDistribuidorIdAsync(string id)
+        public async Task<IEnumerable<DoacaoDto>> EstoquePorDistribuidorIdAsync(string distribuidorId)
         {
             var doacoes = await context.Vistoria.Include(a => a.Doacao).ThenInclude(a => a.DoacaoProdutos)
-                .Where(w => w.DistribudidorId == id).AsNoTracking().ToListAsync();
+                .Where(w => w.DistribudidorId == distribuidorId).AsNoTracking().ToListAsync();
 
             return doacoes.Select(a => DoacaoDto.From(a.Doacao));
         }
@@ -254,7 +282,7 @@ namespace mercadosuspenso.service.Services
             try
             {
                 var produtos = new List<Produto>();
-                
+
                 using var client = new HttpClient
                 {
                     BaseAddress = new Uri("http://www.fazenda.pr.gov.br/")

@@ -8,7 +8,7 @@ namespace mercadosuspenso.api.Extensions
         public static IApplicationBuilder UseSwaggerConfig(this IApplicationBuilder app)
         {
             app.UseSwagger();
-            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Alimento Suspenso API - V1"); });
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "alimento suspenso - v1"); });
 
             return app;
         }

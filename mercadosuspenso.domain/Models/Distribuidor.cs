@@ -1,6 +1,7 @@
 ﻿using mercadosuspenso.domain.Enums;
 using mercadosuspenso.domain.Exceptions;
 using mercadosuspenso.domain.Extensions;
+using System;
 
 namespace mercadosuspenso.domain.Models
 {
@@ -26,7 +27,7 @@ namespace mercadosuspenso.domain.Models
         public string Cnpj { get; set; }
         public string Telefone { get; set; }
         public RegistroStatus Status { get; set; }
-
+        
         public string EnderecoId { get; set; }
         public Endereco Endereco { get; set; }
 
@@ -34,7 +35,6 @@ namespace mercadosuspenso.domain.Models
         public Usuario Usuario { get; set; }
 
         public void Aprovar() => Status = RegistroStatus.Aprovado;
-
         public void Recusar() => Status = RegistroStatus.Recusado;
 
         public void Validar()

@@ -53,9 +53,9 @@ namespace mercadosuspenso.api.Controllers
         [SwaggerResponse(200, "Sucesso", type: typeof(IEnumerable<ContadorDto>))]
         [SwaggerResponse(400, "Dados inválidos", type: typeof(ProblemDto))]
         [SwaggerResponse(403, "Não permitido", type: typeof(ProblemDto))]
-        public async Task<IActionResult> TotalEstoque()
+        public async Task<IActionResult> TotalEstoque(string distribuidorId)
         {
-            var dto = await estoqueService.TotalAsync();
+            var dto = await estoqueService.TotalAsync(distribuidorId);
 
             return Ok(dto);
         }
