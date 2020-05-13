@@ -29,7 +29,7 @@ namespace mercadosuspenso.api.Controllers
         [SwaggerResponse(403, "Não permitido", type: typeof(ProblemDto))]
         public async Task<IActionResult> Listar()
         {
-            var dto = await participanteService.ListAsync();
+            var dto = await participanteService.ListarAsync();
 
             return Ok(dto);
         }

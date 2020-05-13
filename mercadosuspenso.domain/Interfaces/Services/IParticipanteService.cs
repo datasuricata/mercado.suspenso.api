@@ -10,7 +10,7 @@ namespace mercadosuspenso.domain.Interfaces.Services
         Task AprovarRecusarAsync(string cpf);
       
         Task<IEnumerable<ContadorDto>> TotalAsync();
-        Task<IEnumerable<EntidadeDto>> ListAsync();
+        Task<IEnumerable<EntidadeDto>> ListarAsync();
      
         Task<EntidadeDto> PorIdAsync(string id);
     }

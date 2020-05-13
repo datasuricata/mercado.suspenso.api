@@ -89,7 +89,7 @@ namespace mercadosuspenso.service.Services
             }).ToListAsync();
         }
 
-        public async Task<IEnumerable<EntidadeDto>> ListAsync()
+        public async Task<IEnumerable<EntidadeDto>> ListarAsync()
         {
             var entidades = await repository.ListAsync();
 
