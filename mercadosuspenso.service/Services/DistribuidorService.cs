@@ -136,7 +136,9 @@ namespace mercadosuspenso.service.Services
             var entidade = await repository.ByAsync
             (
                 distribuidor => 
-                distribuidor.Id == id
+                distribuidor.Usuario.Id == id,
+                readOnly: true,
+                includes: i => i.Usuario
             );
 
             return EntidadeDto.From(entidade);

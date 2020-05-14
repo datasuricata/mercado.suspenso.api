@@ -26,7 +26,7 @@ namespace mercadosuspenso.api.Controllers
             this.vinculoService = vinculoService;
         }
 
-        [HttpGet("{status}")]
+        [HttpGet("status")]
         [SwaggerOperation(Summary = "Listagem de varejista", Description = "Listagem de varejistas cadastrados na base por status (pendente = 0, ativo = 1, recusado = 2)")]
         [SwaggerResponse(200, "Sucesso", type: typeof(IEnumerable<EntidadeDto>))]
         [SwaggerResponse(400, "Dados inválidos", type: typeof(ProblemDto))]
@@ -108,7 +108,7 @@ namespace mercadosuspenso.api.Controllers
         [SwaggerResponse(403, "Não permitido", type: typeof(ProblemDto))]
         public async Task<IActionResult> Estoque(string id)
         {
-            var dto = await estoqueService.EstoquePorDistribuidorIdAsync(id);
+            var dto = await estoqueService.EstoquePorVarejistaIdAsync(id);
 
             return Ok(dto);
         }

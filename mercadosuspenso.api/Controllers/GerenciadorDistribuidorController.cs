@@ -26,7 +26,7 @@ namespace mercadosuspenso.api.Controllers
             this.distribuidorService = distribuidorService;
         }
 
-        [HttpGet("{status}")]
+        [HttpGet("status")]
         [SwaggerOperation(Summary = "Listagem de distribuidores", Description = "Listagem de distribuidores cadastrado na base por status (pendente = 0, ativo = 1, recusado = 2)")]
         [SwaggerResponse(200, "Sucesso", type: typeof(IEnumerable<EntidadeDto>))]
         [SwaggerResponse(400, "Dados inválidos", type: typeof(ProblemDto))]

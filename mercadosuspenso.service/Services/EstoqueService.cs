@@ -55,9 +55,10 @@ namespace mercadosuspenso.service.Services
             try
             {
                 var varejista = await context.Varejista
+                    .Include(i => i.Usuario)
                     .Include(i => i.Endereco)
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(varejista => varejista.Ativo && varejista.Id == varejistaId);
+                    .FirstOrDefaultAsync(varejista => varejista.Ativo && varejista.Usuario.Id == varejistaId);
 
                 Validar(varejista == null,
                     "Loja inativa contate o suporte");
@@ -80,7 +81,7 @@ namespace mercadosuspenso.service.Services
                     (
                         vinculo =>
                         vinculo.Ativo &&
-                        vinculo.VarejistaId == varejistaId &&
+                        vinculo.VarejistaId == varejista.Id &&
                         vinculo.Distribuidor.Status == RegistroStatus.Aprovado
                     );
 
@@ -94,7 +95,7 @@ namespace mercadosuspenso.service.Services
                         (
                             vinculo =>
                             vinculo.Ativo &&
-                            vinculo.VarejistaId == varejistaId &&
+                            vinculo.VarejistaId == varejista.Id &&
                             vinculo.Distribuidor.Status == RegistroStatus.Aprovado
                         );
                 }
@@ -113,7 +114,7 @@ namespace mercadosuspenso.service.Services
                 await context.Produto.AddRangeAsync(produtos);
 
                 var obj = new { Chave = chave, Versao = versao, Ambiente = ambiente, Identificador = identificador, HashCode = hash };
-                var doacao = new Doacao(null, JsonConvert.SerializeObject(obj), varejistaId);
+                var doacao = new Doacao(null, JsonConvert.SerializeObject(obj), varejista.Id);
                 await context.Doacao.AddAsync(doacao);
 
                 var vistoria = new Vistoria(doacao);

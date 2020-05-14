@@ -89,9 +89,9 @@ namespace mercadosuspenso.service.Services
             }).ToListAsync();
         }
 
-        public async Task<IEnumerable<EntidadeDto>> ListarAsync()
+        public async Task<IEnumerable<EntidadeDto>> ListarPorStatusAsync(RegistroStatus status)
         {
-            var entidades = await repository.ListAsync();
+            var entidades = await repository.ListByAsync(c => c.Status == status, noTracking: true);
 
             return entidades.OrderBy(a => a.CriadoEm).Select(EntidadeDto.From);
         }

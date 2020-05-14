@@ -1,4 +1,5 @@
 ﻿using mercadosuspenso.domain.Dtos;
+using mercadosuspenso.domain.Enums;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,7 +11,7 @@ namespace mercadosuspenso.domain.Interfaces.Services
         Task AprovarRecusarAsync(string cpf);
       
         Task<IEnumerable<ContadorDto>> TotalAsync();
-        Task<IEnumerable<EntidadeDto>> ListarAsync();
+        Task<IEnumerable<EntidadeDto>> ListarPorStatusAsync(RegistroStatus status);
      
         Task<EntidadeDto> PorIdAsync(string id);
     }

@@ -41,7 +41,9 @@ namespace mercadosuspenso.orm.Repository
 
         public virtual async Task<T> ByIdAsync(string id, bool noTracking = true, params Expression<Func<T, object>>[] includes)
         {
-            return includes.Any() ? await Queryable(noTracking, includes).FirstOrDefaultAsync(x => x.Id == id) : await context.Set<T>().FindAsync(id);
+            if (includes.Any())
+                return await Queryable(noTracking, includes).FirstOrDefaultAsync(x => x.Id == id);
+            return await context.Set<T>().FindAsync(id);
         }
 
         public virtual async Task<IEnumerable<T>> ListByAsync(Expression<Func<T, bool>> where, bool noTracking = true, params Expression<Func<T, object>>[] includes)

@@ -1,5 +1,6 @@
 ﻿using mercadosuspenso.api.Commands;
 using mercadosuspenso.domain.Dtos;
+using mercadosuspenso.domain.Enums;
 using mercadosuspenso.domain.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,14 +23,14 @@ namespace mercadosuspenso.api.Controllers
         }
 
       
-        [HttpGet]
-        [SwaggerOperation(Summary = "Listagem de participantes", Description = "Listagem participantes cadastrado na base")]
+        [HttpGet("status")]
+        [SwaggerOperation(Summary = "Listagem de participantes", Description = "Listagem participantes cadastrado na base por status de registro")]
         [SwaggerResponse(200, "Sucesso", type: typeof(IEnumerable<EntidadeDto>))]
         [SwaggerResponse(400, "Dados inválidos", type: typeof(ProblemDto))]
         [SwaggerResponse(403, "Não permitido", type: typeof(ProblemDto))]
-        public async Task<IActionResult> Listar()
+        public async Task<IActionResult> ListarPorStatus(RegistroStatus status)
         {
-            var dto = await participanteService.ListarAsync();
+            var dto = await participanteService.ListarPorStatusAsync(status);
 
             return Ok(dto);
         }
