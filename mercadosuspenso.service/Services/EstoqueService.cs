@@ -45,7 +45,6 @@ namespace mercadosuspenso.service.Services
         public async Task<ProcessamentoDto> EntradaAsync(string chave, int versao, int ambiente, int identificador, string hash)
         {
             var varejistaId = me.FindFirst(ClaimsConstant.Id).Value;
-            var recipiente = default(Vinculo);
             bool sucesso = true;
             string mensagem = default;
             var doacaoProdutos = new List<DoacaoProduto>();
@@ -66,41 +65,19 @@ namespace mercadosuspenso.service.Services
                 Validar(varejista.Status != RegistroStatus.Aprovado,
                     "Loja pendente de ativação, contate o suporte");
 
-                recipiente = await context.Vinculo
+                var distribuidores = await context.Vinculo
                     .Include(i => i.Distribuidor)
                     .Include(i => i.Distribuidor.Usuario)
-                    .Join
-                    (
-                        context.Vistoria.Include(i => i.Doacao),
-                        vinculo => vinculo.DistribuidorId,
-                        vistoria => vistoria.DistribudidorId, (vinculo, vistoria) => new { vinculo, vistoria }
-                    )
-                    .OrderBy(o => o.vistoria.CriadoEm).Select(s => s.vinculo)
                     .AsNoTracking()
-                    .FirstOrDefaultAsync
+                    .Where
                     (
                         vinculo =>
                         vinculo.Ativo &&
                         vinculo.VarejistaId == varejista.Id &&
                         vinculo.Distribuidor.Status == RegistroStatus.Aprovado
-                    );
+                    ).Select(x => x.Distribuidor).OrderBy(o => o.CriadoEm).ToListAsync();
 
-                if (recipiente == null)
-                {
-                    recipiente = await context.Vinculo
-                        .Include(i => i.Distribuidor)
-                        .Include(i => i.Distribuidor.Usuario)
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync
-                        (
-                            vinculo =>
-                            vinculo.Ativo &&
-                            vinculo.VarejistaId == varejista.Id &&
-                            vinculo.Distribuidor.Status == RegistroStatus.Aprovado
-                        );
-                }
-
-                Validar(recipiente == null,
+                Validar(distribuidores == null,
                     "Não existe nenhum distribuidor aprovado vinculado a sua loja, contate o suporte");
 
                 var produtos = await CarregarNotaFiscalAsync(chave, versao, ambiente, identificador, hash);
@@ -127,17 +104,27 @@ namespace mercadosuspenso.service.Services
                 await context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                var email = recipiente.Distribuidor.Usuario.Email;
+                var dist = distribuidores.FirstOrDefault(x => !x.AtualizadoEm.HasValue);
+
+                if (dist == null)
+                    dist = distribuidores.OrderBy(x => x.UltimoResgate).SingleOrDefault();
+
+                var email = dist.Usuario.Email;
+
                 await smtp.EnviarAsync(smtp.ResgateDoacao(email, varejista.ToString(), vistoria.Hash));
+            }
+            catch (DomainException e)
+            {
+                sucesso = false;
+                mensagem = e.Message;
+                await transaction.RollbackAsync();
             }
             catch (Exception)
             {
                 sucesso = false;
-                mensagem = "Produto não integrado, contate o suporte";
-
+                mensagem = "Estoque não integrado, contate o suporte";
                 await transaction.RollbackAsync();
             }
-
             return new ProcessamentoDto
             {
                 Mensagem = mensagem,
@@ -145,77 +132,185 @@ namespace mercadosuspenso.service.Services
             };
         }
 
-        public async Task ResgatarAsync(string rastreio, string cnpj)
+        //public async Task DistribuirAsync()
+        //{
+        //    var id = me.FindFirst(ClaimsConstant.Id).Value;
+
+        //    var distribuidor = await context.Distribuidor.Include(i => i.Endereco)
+        //        .AsNoTracking().FirstOrDefaultAsync(c => c.UsuarioId == id);
+
+        //    Validar(distribuidor is null,
+        //        "Parceiro não localizado, verifique seus dados e tente novamente");
+
+        //    var participantes = await context.Participante.Include(i => i.Endereco).Where
+        //        (
+        //            participante =>
+        //            participante.Endereco.Bairro == distribuidor.Endereco.Bairro &&
+        //            participante.Status == RegistroStatus.Aprovado &&
+        //            participante.Ativo
+        //        )
+        //        .AsNoTracking().ToListAsync();
+
+        //    var vistorias = await context.Vistoria.Where
+        //        (
+        //            vistoria =>
+        //            vistoria.DistribudidorId == vistoria.Id &&
+        //            vistoria.Status == VistoriaStatus.Resgate &&
+        //            vistoria.ParticipanteId == null &&
+        //            vistoria.Ativo
+        //        ).ToListAsync();
+
+        //    foreach (var vistoria in vistorias)
+        //    {
+        //        vistoria.ParticipanteId = 
+        //    }
+        //}
+
+        public async Task<ProcessamentoDto> ResgatarAsync(string rastreio, string cnpj)
         {
-            var vistoria = await context.Vistoria.FirstOrDefaultAsync
-            (
-                vistoria =>
-                vistoria.Ativo &&
-                vistoria.Hash.Contains(rastreio, StringComparison.InvariantCultureIgnoreCase)
-            );
+            bool sucesso = true;
+            string mensagem = default;
 
-            Validar(vistoria == null,
-                "Sem registros encontrados");
+            using var transaction = context.Database.BeginTransaction();
 
-            Validar(vistoria.Status != VistoriaStatus.Entrada,
-                "Produtos já receberam a retirada do estoque");
+            try
+            {
+                var vistoria = await context.Vistoria.FirstOrDefaultAsync
+                (
+                    vistoria =>
+                    vistoria.Ativo &&
+                    vistoria.Hash.Contains(rastreio, StringComparison.InvariantCultureIgnoreCase)
+                );
 
-            var distribuidor = await context.Distribuidor.AsNoTracking().FirstOrDefaultAsync
-            (
-                distribuidor =>
-                distribuidor.Ativo &&
-                distribuidor.Cnpj == cnpj.CleanFormat()
-            );
+                Validar(vistoria == null,
+                    "Sem registros encontrados");
 
-            Validar(distribuidor.Status == RegistroStatus.Pendente,
-                "Distribuidor com cadastro pendente de aprovação pelos moderadores");
+                Validar(vistoria.Status != VistoriaStatus.Entrada,
+                    "Produtos já receberam a retirada do estoque");
 
-            Validar(distribuidor.Status == RegistroStatus.Recusado,
-                "Distribuidor com cadastro recusado pelos moderadores");
+                var distribuidor = await context.Distribuidor.AsNoTracking().FirstOrDefaultAsync
+                (
+                    distribuidor =>
+                    distribuidor.Ativo &&
+                    distribuidor.Cnpj == cnpj.CleanFormat()
+                );
 
-            vistoria.Resgatar(distribuidor.Id);
+                Validar(distribuidor.Status == RegistroStatus.Pendente,
+                    "Distribuidor com cadastro pendente de aprovação pelos moderadores");
 
-            context.Update(vistoria);
-            await context.SaveChangesAsync();
+                Validar(distribuidor.Status == RegistroStatus.Recusado,
+                    "Distribuidor com cadastro recusado pelos moderadores");
+
+                distribuidor.UltimoResgate = DateTimeOffset.UtcNow;
+
+                var participantes = await context.Participante.Where
+                (
+                    participante =>
+                    participante.Ativo &&
+                    participante.Status == RegistroStatus.Aprovado
+                )
+                .OrderBy(participante => participante.CriadoEm).ToListAsync();
+
+                vistoria.Resgatar(distribuidor.Id);
+
+                context.Update(vistoria);
+
+                await context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                if (participantes != null)
+                {
+                    var participante = participantes.FirstOrDefault(participante => !participante.UltimoResgate.HasValue);
+
+                    if (participante == null)
+                        participante = participantes.OrderBy(participante => participante.UltimoResgate).Single();
+
+                    await smtp.EnviarAsync(smtp.ResgateDoacao(participante.Email, distribuidor.ToString(), vistoria.Hash));
+                }
+            }
+            catch (DomainException e)
+            {
+                sucesso = false;
+                mensagem = e.Message;
+                await transaction.RollbackAsync();
+            }
+            catch (Exception)
+            {
+                sucesso = false;
+                mensagem = "Doação não resgatada, contate o suporte";
+                await transaction.RollbackAsync();
+            }
+            return new ProcessamentoDto
+            {
+                Mensagem = mensagem,
+                Sucesso = sucesso,
+            };
         }
 
-        public async Task RetirarAsync(string rastreio, string cpf)
+        public async Task<ProcessamentoDto> RetirarAsync(string rastreio, string cpf)
         {
-            //todo passar para a camada de serviço correta
-            var vistoria = await context.Vistoria.FirstOrDefaultAsync
-            (
-                vistoria =>
-                vistoria.Ativo &&
-                vistoria.Hash.Contains(rastreio, StringComparison.InvariantCultureIgnoreCase)
-            );
+            bool sucesso = true;
+            string mensagem = default;
 
-            Validar(vistoria == null,
-                "Sem registros encontrados");
+            using var transaction = context.Database.BeginTransaction();
 
-            Validar(vistoria.Status == VistoriaStatus.Entrada,
-                "Produtos pendentes de retirada no varejista");
+            try
+            {
+                var vistoria = await context.Vistoria.FirstOrDefaultAsync
+                (
+                    vistoria =>
+                    vistoria.Ativo &&
+                    vistoria.Hash.Contains(rastreio, StringComparison.InvariantCultureIgnoreCase)
+                );
 
-            Validar(vistoria.Status == VistoriaStatus.Retirada,
-                "Produtos já receberam a retirada do estoque");
+                Validar(vistoria == null,
+                    "Sem registros encontrados");
 
-            //todo passar para a camada de serviço correta
-            var participante = await context.Participante.AsNoTracking().FirstOrDefaultAsync
-            (
-                participante =>
-                participante.Ativo &&
-                participante.Cpf == cpf.CleanFormat()
-            );
+                Validar(vistoria.Status == VistoriaStatus.Entrada,
+                    "Produtos pendentes de retirada no varejista");
 
-            Validar(participante.Status == RegistroStatus.Pendente,
-                "Participante com cadastro pendente de aprovação pelos moderadores");
+                Validar(vistoria.Status == VistoriaStatus.Retirada,
+                    "Produtos já receberam a retirada do estoque");
 
-            Validar(participante.Status == RegistroStatus.Recusado,
-                "Participante com cadastro recusado pelos moderadores");
+                var participante = await context.Participante.FirstOrDefaultAsync
+                (
+                    participante =>
+                    participante.Ativo &&
+                    participante.Cpf == cpf.CleanFormat()
+                );
 
-            vistoria.Retirar(participante.Id);
+                Validar(participante.Status == RegistroStatus.Pendente,
+                    "Participante com cadastro pendente de aprovação pelos moderadores");
 
-            context.Update(vistoria);
-            await context.SaveChangesAsync();
+                Validar(participante.Status == RegistroStatus.Recusado,
+                    "Participante com cadastro recusado pelos moderadores");
+
+                participante.UltimoResgate = DateTimeOffset.UtcNow;
+
+                context.Update(vistoria);
+                context.Update(participante);
+
+                await context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+            }
+            catch (DomainException e)
+            {
+                sucesso = false;
+                mensagem = e.Message;
+                await transaction.RollbackAsync();
+            }
+            catch (Exception)
+            {
+                sucesso = false;
+                mensagem = "Doação não retirada, contate o suporte";
+                await transaction.RollbackAsync();
+            }
+            return new ProcessamentoDto
+            {
+                Mensagem = mensagem,
+                Sucesso = sucesso,
+            };
         }
 
         public async Task<IEnumerable<ContadorDto>> TotalAsync(string distribuidorId)

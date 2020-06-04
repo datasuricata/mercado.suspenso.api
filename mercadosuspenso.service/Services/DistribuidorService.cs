@@ -6,10 +6,8 @@ using mercadosuspenso.domain.Models;
 using mercadosuspenso.domain.Security;
 using mercadosuspenso.orm.Repository;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -22,17 +20,19 @@ namespace mercadosuspenso.service.Services
         private Assert Validar = DomainException.Validate;
 
         private readonly ISmtpService smtp;
-        private readonly IRepository<Distribuidor> repository;
+        private readonly IRepository<Distribuidor> distribuidoRepository;
+        private readonly IRepository<Aceite> aceiteRepository;
         private readonly ClaimsPrincipal me;
 
-        public DistribuidorService(ISmtpService smtp, IPrincipal principal, IRepository<Distribuidor> repository)
+        public DistribuidorService(ISmtpService smtp, IPrincipal principal, IRepository<Aceite> aceiteRepository, IRepository<Distribuidor> distribuidoRepository)
         {
             this.smtp = smtp;
-            this.repository = repository;
+            this.distribuidoRepository = distribuidoRepository;
+            this.aceiteRepository = aceiteRepository;
             this.me = (ClaimsPrincipal)principal;
         }
 
-        public async Task AdicionarAsync(string razaoSocial, string representante, string cnpj, string telefone, string email, string senha)
+        public async Task AdicionarAsync(string razaoSocial, string representante, string cnpj, string telefone, string email, string senha, bool aceite)
         {
             var distribuidor = new Distribuidor(razaoSocial, representante, cnpj, telefone)
             {
@@ -41,7 +41,7 @@ namespace mercadosuspenso.service.Services
 
             distribuidor.Usuario.DefinirTipo(UsuarioTipo.Distribuidor);
 
-            var registrado = await repository.ByAsync(p => p.Ativo && p.Cnpj == distribuidor.Cnpj);
+            var registrado = await distribuidoRepository.PorAsync(p => p.Ativo && p.Cnpj == distribuidor.Cnpj);
 
             if (registrado != null)
             {
@@ -51,8 +51,15 @@ namespace mercadosuspenso.service.Services
                 Validar(registrado != null,
                     "Já um cadastro processado ou pendente com estes dados");
             }
+            
+            Validar(aceite == false,
+                "É preciso aceitar os termos para concluir o cadastro");
 
-            await repository.InsertAsync(distribuidor);
+            await distribuidoRepository.InserirAsync(distribuidor);
+
+            var termo = new Aceite(distribuidor.UsuarioId, distribuidor.Cnpj);
+            
+            await aceiteRepository.InserirAsync(termo);
 
             await smtp.EnviarAsync(smtp.BoasVindas(email, representante));
         }
@@ -61,7 +68,7 @@ namespace mercadosuspenso.service.Services
         {
             var id = me.FindFirst(ClaimsConstant.Id).Value;
 
-            var distribuidor = await repository.ByAsync(c => c.UsuarioId == id, false);
+            var distribuidor = await distribuidoRepository.PorAsync(c => c.UsuarioId == id, noTracking: false);
 
             Validar(distribuidor == null,
                 "Usuário não encontrado, talvez a sessão tenha expirado, tente logar novamente");
@@ -71,12 +78,12 @@ namespace mercadosuspenso.service.Services
             distribuidor.Cnpj = cnpj;
             distribuidor.Telefone = telefone;
 
-            await repository.UpdateAsync(distribuidor);
+            await distribuidoRepository.AtualizarAsync(distribuidor);
         }
 
         public async Task AprovarRecusarAsync(string id)
         {
-            var distribuidor = await repository.ByAsync(p => p.Ativo && p.Id == id, false, i => i.Usuario);
+            var distribuidor = await distribuidoRepository.PorAsync(p => p.Ativo && p.Id == id, noTracking: false, i => i.Usuario);
 
             if (distribuidor.Status == RegistroStatus.Aprovado)
             {
@@ -94,7 +101,7 @@ namespace mercadosuspenso.service.Services
         {
             var id = me.FindFirst(ClaimsConstant.Id).Value;
 
-            var distribuidor = await repository.ByAsync(c => c.UsuarioId == id, false);
+            var distribuidor = await distribuidoRepository.PorAsync(c => c.UsuarioId == id, noTracking: false);
 
             Validar(distribuidor == null,
                 "Usuário não encontrado, talvez a sessão tenha expirado, tente logar novamente");
@@ -116,14 +123,12 @@ namespace mercadosuspenso.service.Services
                 distribuidor.Endereco.Validar();
             }
 
-            await repository.UpdateAsync(distribuidor);
+            await distribuidoRepository.AtualizarAsync(distribuidor);
         }
 
         public async Task<EntidadeDto> PorIdAsync(string id)
         {
-            var entidade = await repository.ByIdAsync(id);
-
-            return EntidadeDto.From(entidade);
+            return EntidadeDto.From(await distribuidoRepository.PorIdAsync(id));
         }
 
         public async Task<EntidadeDto> MeusDadosAsync()
@@ -133,11 +138,11 @@ namespace mercadosuspenso.service.Services
             Validar(string.IsNullOrEmpty(id),
                "Usuário não encontrado, talvez a sessão tenha expirado, tente logar novamente");
 
-            var entidade = await repository.ByAsync
+            var entidade = await distribuidoRepository.PorAsync
             (
                 distribuidor => 
                 distribuidor.Usuario.Id == id,
-                readOnly: true,
+                noTracking: true,
                 includes: i => i.Usuario
             );
 
@@ -146,7 +151,7 @@ namespace mercadosuspenso.service.Services
 
         public async Task<IEnumerable<ContadorDto>> TotalAsync()
         {
-            return await repository.Queryable(noTracking: true)
+            return await distribuidoRepository.Queryable()
                 .Where(x => x.Ativo).GroupBy(x => x.Status).Select(a => new ContadorDto
                 {
                     Titulo = $"Distribuidores com status {a.Key.ToString().ToLower()}",
@@ -157,9 +162,8 @@ namespace mercadosuspenso.service.Services
 
         public async Task<IEnumerable<EntidadeDto>> ListarPorStatusAsync(RegistroStatus status)
         {
-            var entidades =  await repository.ListByAsync(c => c.Status == status, noTracking: true);
-
-            return entidades.OrderBy(a => a.CriadoEm).Select(EntidadeDto.From);
+            return (await distribuidoRepository.ListarPorAsync(c => c.Status == status))
+                .OrderBy(a => a.CriadoEm).Select(EntidadeDto.From);
         }
     }
 }

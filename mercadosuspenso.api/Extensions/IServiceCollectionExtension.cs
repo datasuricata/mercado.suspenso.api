@@ -110,6 +110,7 @@ namespace mercadosuspenso.api.Extensions
                 options.AddPolicy("retailer", policy => policy.RequireRole("RETAILER"));
                 options.AddPolicy("management", policy => policy.RequireRole("MANAGEMENT"));
                 options.AddPolicy("reports", policy => policy.RequireRole("REPORTS"));
+                options.AddPolicy("imports", policy => policy.RequireRole("IMPORTS"));
             });
 
             return services;

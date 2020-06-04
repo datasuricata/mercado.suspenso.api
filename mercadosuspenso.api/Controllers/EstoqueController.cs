@@ -97,7 +97,7 @@ namespace mercadosuspenso.api.Controllers
 
         [HttpPatch("resgate")]
         [SwaggerOperation(Summary = "Resgate no estoque", Description = "Resgate de produtos pelo distribuidor no varejista, deve informar o hash que recebeu por e-mail e o cnpj para retirada")]
-        [SwaggerResponse(200, "Sucesso")]
+        [SwaggerResponse(200, "Sucesso", type: typeof(ProcessamentoDto))]
         [SwaggerResponse(400, "Dados inválidos", type: typeof(ProblemDto))]
         [SwaggerResponse(403, "Não permitido", type: typeof(ProblemDto))]
         public async Task<IActionResult> Resgate([FromBody] RetiradaCommand command)
@@ -109,7 +109,7 @@ namespace mercadosuspenso.api.Controllers
 
         [HttpPatch("retirada")]
         [SwaggerOperation(Summary = "Retirada no estoque", Description = "Retirada de produtos pelo participante no distribuidor, deve informar o hash que recebeu por e-mail e o cpf para retirada")]
-        [SwaggerResponse(200, "Sucesso")]
+        [SwaggerResponse(200, "Sucesso", type: typeof(ProcessamentoDto))]
         [SwaggerResponse(400, "Dados inválidos", type: typeof(ProblemDto))]
         [SwaggerResponse(403, "Não permitido", type: typeof(ProblemDto))]
         public async Task<IActionResult> Retirada([FromBody] RetiradaCommand command)

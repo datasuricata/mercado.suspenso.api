@@ -23,19 +23,22 @@ namespace mercadosuspenso.service.Services
         private Assert Validar = DomainException.Validate;
 
         private readonly ISmtpService smtp;
-        private readonly IRepository<Participante> repository;
+        private readonly IRepository<Participante> participanteRepository;
 
-        public ParticipanteService(ISmtpService smtp, IRepository<Participante> repository)
+        public ParticipanteService(ISmtpService smtp, IRepository<Participante> participanteRepository)
         {
             this.smtp = smtp;
-            this.repository = repository;
+            this.participanteRepository = participanteRepository;
         }
 
-        public async Task AdicionarAsync(string nome, string cpf, string rg, string telefone, string email)
+        public async Task AdicionarAsync(string nome, string cpf, string rg, string telefone, string email, string cep, string logradouro, string numero, string complemento, string bairro, string cidade, string estado)
         {
-            var participante = new Participante(nome, cpf, rg, telefone, email);
+            var participante = new Participante(nome, cpf, rg, telefone, email)
+            {
+                Endereco = new Endereco(cep, logradouro, numero, complemento, bairro, cidade, estado)
+            };
 
-            var registrado = await repository.ByAsync(p => p.Ativo && p.Cpf == participante.Cpf);
+            var registrado = await participanteRepository.PorAsync(p => p.Ativo && p.Cpf == participante.Cpf);
 
             if (registrado != null)
             {
@@ -55,7 +58,7 @@ namespace mercadosuspenso.service.Services
                 }
             }
 
-            await repository.InsertAsync(participante);
+            await participanteRepository.InserirAsync(participante);
 
             if (!string.IsNullOrEmpty(email))
             {
@@ -65,7 +68,7 @@ namespace mercadosuspenso.service.Services
 
         public async Task AprovarRecusarAsync(string id)
         {
-            var participante = await repository.ByAsync(p => p.Ativo && p.Id == id, false);
+            var participante = await participanteRepository.PorAsync(p => p.Ativo && p.Id == id, noTracking: false);
 
             if (participante.Status == RegistroStatus.Aprovado)
             {
@@ -81,7 +84,7 @@ namespace mercadosuspenso.service.Services
 
         public async Task<IEnumerable<ContadorDto>> TotalAsync()
         {
-            return await repository.Queryable(true).GroupBy(x => x.Status).Select(a => new ContadorDto
+            return await participanteRepository.Queryable().GroupBy(x => x.Status).Select(a => new ContadorDto
             {
                 Titulo = $"Participantes com status {a.Key.ToString().ToLower()}",
                 Status = a.Key.ToString(),
@@ -91,16 +94,13 @@ namespace mercadosuspenso.service.Services
 
         public async Task<IEnumerable<EntidadeDto>> ListarPorStatusAsync(RegistroStatus status)
         {
-            var entidades = await repository.ListByAsync(c => c.Status == status, noTracking: true);
-
-            return entidades.OrderBy(a => a.CriadoEm).Select(EntidadeDto.From);
+            return (await participanteRepository.ListarAsync(noTracking: false, c => c.Status == status))
+                .OrderBy(a => a.CriadoEm).Select(EntidadeDto.From);
         }
 
         public async Task<EntidadeDto> PorIdAsync(string id)
         {
-            var entidade = await repository.ByIdAsync(id);
-
-            return EntidadeDto.From(entidade);
+            return EntidadeDto.From(await participanteRepository.PorIdAsync(id));
         }
 
         private async Task<bool> VerificaCadastroPortalTransparenciaAsync(string cpf)

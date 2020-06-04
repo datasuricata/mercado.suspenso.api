@@ -27,7 +27,8 @@ namespace mercadosuspenso.domain.Models
         public string Cnpj { get; set; }
         public string Telefone { get; set; }
         public RegistroStatus Status { get; set; }
-        
+        public DateTimeOffset? UltimoResgate { get; set; }
+
         public string EnderecoId { get; set; }
         public Endereco Endereco { get; set; }
 
@@ -45,6 +46,11 @@ namespace mercadosuspenso.domain.Models
             Quando(string.IsNullOrEmpty(Cnpj), "Cnpj deve ser informado");
             Quando(string.IsNullOrEmpty(RazaoSocial), "Razao Social deve ser informada");
             Quando(Cnpj.Length != 14, "Cnpj inválido");
+        }
+
+        public override string ToString()
+        {
+            return $"{RazaoSocial} - {Endereco.Logradouro}, {Endereco.Numero}";
         }
     }
 }

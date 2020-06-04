@@ -27,6 +27,7 @@ namespace mercadosuspenso.ioc
             services.AddTransient<IEstoqueService, EstoqueService>();
             services.AddTransient<IVinculoService, VinculoService>();
             services.AddTransient<ISmtpService, SendGridSmtpService>();
+            services.AddTransient<ICargaService, CargaService>();
         }
     }
 }

@@ -37,7 +37,8 @@ namespace mercadosuspenso.api.Controllers
                 command.Cnpj,
                 command.Telefone,
                 command.Email,
-                command.Senha
+                command.Senha,
+                command.Aceite
             );
 
             return Ok();

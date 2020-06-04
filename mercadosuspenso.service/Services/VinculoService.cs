@@ -52,7 +52,7 @@ namespace mercadosuspenso.service.Services
             if (tipo == UsuarioTipo.Distribuidor)
                 vinculos = parceirosIds.Select(i => new Vinculo(parceiroId, i) { UsuarioId = userId });
 
-            await repository.InsertRangeAsync(vinculos);
+            await repository.InserirRangeAsync(vinculos);
         }
 
         public async Task RemoverVinculosAsync(string parceiroid, List<string> parceirosIds)
@@ -68,7 +68,7 @@ namespace mercadosuspenso.service.Services
             Validar(parceirosIds.Count() == 0,
                 "Deve conter ao menos um vinculo na lista");
 
-            var vinculos = await repository.ListByAsync(vinculo => parceirosIds.Any(a => a == vinculo.Id), false);
+            var vinculos = await repository.ListarPorAsync(vinculo => parceirosIds.Any(a => a == vinculo.Id), noTracking: false);
 
             if (vinculos != null)
             {
@@ -77,7 +77,7 @@ namespace mercadosuspenso.service.Services
                     vinculo.Ativo = false;
                     vinculo.UsuarioId = userId;
 
-                    await repository.UpdateAsync(vinculo);
+                    await repository.AtualizarAsync(vinculo);
                 }
             }
         }
@@ -100,7 +100,7 @@ namespace mercadosuspenso.service.Services
 
         public async Task<IEnumerable<EntidadeDto>> ListarDistribuidorSemVinculoPorVarejista(string varejistaId, RegistroStatus status)
         {
-            var query = repository.Queryable(noTracking: true, includes: i => i.Varejista);
+            var query = repository.Queryable(includes: i => i.Varejista);
 
             var vinculos = await query.Where
             (
@@ -119,12 +119,11 @@ namespace mercadosuspenso.service.Services
             Validar(string.IsNullOrEmpty(distribuidorId),
                 "Informe o distribuidor para listar parceiros vinculados");
 
-            var vinculos = await repository.ListByAsync
+            var vinculos = await repository.ListarPorAsync
             (
                 vinculo =>
                 vinculo.Ativo &&
                 vinculo.DistribuidorId == distribuidorId,
-                noTracking: true,
                 includes: i => i.Varejista
             );
 
@@ -136,12 +135,11 @@ namespace mercadosuspenso.service.Services
             Validar(string.IsNullOrEmpty(varejistaId),
                 "Informe o varejista para listar parceiros vinculados");
 
-            var vinculos = await repository.ListByAsync
+            var vinculos = await repository.ListarPorAsync
             (
                 vinculo =>
                 vinculo.Ativo &&
                 vinculo.DistribuidorId == varejistaId,
-                noTracking: true,
                 includes: i => i.Distribuidor
             );
 
@@ -160,24 +158,22 @@ namespace mercadosuspenso.service.Services
 
             if (tipo == UsuarioTipo.Distribuidor)
             {
-                vinculos = await repository.ListByAsync
+                vinculos = await repository.ListarPorAsync
                 (
                     vinculo =>
                     vinculo.Ativo &&
                     vinculo.DistribuidorId == id,
-                    noTracking: true,
                     includes: i => i.Varejista
                 );
             }
 
             if (tipo == UsuarioTipo.Varejo)
             {
-                vinculos = await repository.ListByAsync
+                vinculos = await repository.ListarPorAsync
                 (
                     vinculo =>
                     vinculo.Ativo &&
                     vinculo.VarejistaId == id,
-                    noTracking: true,
                     includes: i => i.Distribuidor
                 );
             }

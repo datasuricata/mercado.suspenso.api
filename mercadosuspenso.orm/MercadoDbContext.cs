@@ -10,6 +10,7 @@ namespace mercadosuspenso.orm
 {
     public class MercadoDbContext : DbContext
     {
+        public DbSet<Aceite> Aceite { get; set; }
         public DbSet<Vinculo> Vinculo { get; set; }
         public DbSet<Vistoria> Vistoria { get; set; }
         public DbSet<Distribuidor> Distribuidor { get; set; }
@@ -71,7 +72,12 @@ namespace mercadosuspenso.orm
 
                 if (entry.Property(nameof(Entity.AtualizadoEm)) != null)
                 {
-                    if (entry.State == EntityState.Added || entry.State == EntityState.Modified)
+                    if (entry.State == EntityState.Added)
+                    {
+                        entry.Property(nameof(Entity.AtualizadoEm)).CurrentValue = null;
+                    }
+                
+                    if (entry.State == EntityState.Modified)
                     {
                         entry.Property(nameof(Entity.AtualizadoEm)).CurrentValue = DateTimeOffset.Now;
                     }

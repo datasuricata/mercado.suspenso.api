@@ -1,6 +1,7 @@
 ﻿using mercadosuspenso.domain.Enums;
 using mercadosuspenso.domain.Exceptions;
 using mercadosuspenso.domain.Extensions;
+using System;
 
 namespace mercadosuspenso.domain.Models
 {
@@ -28,12 +29,12 @@ namespace mercadosuspenso.domain.Models
         public string Telefone { get; set; }
         public string Email { get; set; }
         public RegistroStatus Status { get; set; }
+        public DateTimeOffset? UltimoResgate { get; set; }
 
         public string EnderecoId { get; set; }
         public Endereco Endereco { get; set; }
 
         public void Aprovar() => Status = RegistroStatus.Aprovado;
-
         public void Recusar() => Status = RegistroStatus.Recusado;
 
         public void Validar()

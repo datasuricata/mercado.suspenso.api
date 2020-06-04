@@ -7,8 +7,8 @@ namespace mercadosuspenso.domain.Interfaces.Services
     public interface IEstoqueService
     {
         Task<ProcessamentoDto> EntradaAsync(string chave, int versao, int ambiente, int identificador, string hash);
-        Task ResgatarAsync(string rastreio, string distribuidorId);
-        Task RetirarAsync(string rastreio, string cpf);
+        Task<ProcessamentoDto> ResgatarAsync(string rastreio, string distribuidorId);
+        Task<ProcessamentoDto> RetirarAsync(string rastreio, string cpf);
 
         Task<IEnumerable<ContadorDto>> TotalAsync(string distribuidorId);
         Task<IEnumerable<VistoriaDto>> EstoqueLogadoAsync();

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using mercadosuspenso.orm;
 
 namespace mercadosuspenso.orm.Migrations
 {
     [DbContext(typeof(MercadoDbContext))]
-    partial class MercadoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200514214942_2020-00004")]
+    partial class _202000004
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,9 +80,6 @@ namespace mercadosuspenso.orm.Migrations
                     b.Property<string>("Telefone")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTimeOffset?>("UltimoResgate")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<string>("UsuarioId")
                         .HasColumnType("nvarchar(32)");
 
@@ -98,7 +97,7 @@ namespace mercadosuspenso.orm.Migrations
                             Id = "cf936849e0b244a2a6a812c15d69390d",
                             Ativo = true,
                             Cnpj = "46992525000151",
-                            CriadoEm = new DateTimeOffset(new DateTime(2020, 6, 4, 0, 13, 26, 413, DateTimeKind.Unspecified).AddTicks(4158), new TimeSpan(0, 0, 0, 0, 0)),
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 14, 21, 49, 41, 840, DateTimeKind.Unspecified).AddTicks(2677), new TimeSpan(0, 0, 0, 0, 0)),
                             EnderecoId = "eff3b1b9b3b742a6b5ba4fffdf99585e",
                             RazaoSocial = "Luiza e Jennifer Restaurante Ltda",
                             Representante = "Jennifer Rocha",
@@ -111,7 +110,7 @@ namespace mercadosuspenso.orm.Migrations
                             Id = "189be3c445504dcf9d8559959579035e",
                             Ativo = true,
                             Cnpj = "99270944000146",
-                            CriadoEm = new DateTimeOffset(new DateTime(2020, 6, 4, 0, 13, 26, 414, DateTimeKind.Unspecified).AddTicks(665), new TimeSpan(0, 0, 0, 0, 0)),
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 14, 21, 49, 41, 840, DateTimeKind.Unspecified).AddTicks(9435), new TimeSpan(0, 0, 0, 0, 0)),
                             EnderecoId = "5d2387e4b93f476c81dd1bb757b27f43",
                             RazaoSocial = "LAndré e Mateus Pizzaria Delivery Ltda",
                             Representante = "Carlos Matues",
@@ -214,7 +213,7 @@ namespace mercadosuspenso.orm.Migrations
                             Cep = "04747110",
                             Cidade = "São Paulo",
                             Complemento = "SALA 02",
-                            CriadoEm = new DateTimeOffset(new DateTime(2020, 6, 4, 0, 13, 26, 412, DateTimeKind.Unspecified).AddTicks(3682), new TimeSpan(0, 0, 0, 0, 0)),
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 14, 21, 49, 41, 838, DateTimeKind.Unspecified).AddTicks(8983), new TimeSpan(0, 0, 0, 0, 0)),
                             Estado = "SP",
                             Logradouro = "Rua Santo Aristides",
                             Numero = "23"
@@ -227,7 +226,7 @@ namespace mercadosuspenso.orm.Migrations
                             Cep = "04028003",
                             Cidade = "São Paulo",
                             Complemento = "Conj. 01",
-                            CriadoEm = new DateTimeOffset(new DateTime(2020, 6, 4, 0, 13, 26, 412, DateTimeKind.Unspecified).AddTicks(9678), new TimeSpan(0, 0, 0, 0, 0)),
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 14, 21, 49, 41, 839, DateTimeKind.Unspecified).AddTicks(8427), new TimeSpan(0, 0, 0, 0, 0)),
                             Estado = "SP",
                             Logradouro = "Avenida Ibirapuera",
                             Numero = "334"
@@ -240,7 +239,7 @@ namespace mercadosuspenso.orm.Migrations
                             Cep = "09171686",
                             Cidade = "São Paulo",
                             Complemento = "02",
-                            CriadoEm = new DateTimeOffset(new DateTime(2020, 6, 4, 0, 13, 26, 412, DateTimeKind.Unspecified).AddTicks(9849), new TimeSpan(0, 0, 0, 0, 0)),
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 14, 21, 49, 41, 839, DateTimeKind.Unspecified).AddTicks(8552), new TimeSpan(0, 0, 0, 0, 0)),
                             Estado = "SP",
                             Logradouro = "Rua Santa Adélia",
                             Numero = "35"
@@ -253,7 +252,7 @@ namespace mercadosuspenso.orm.Migrations
                             Cep = "80020040",
                             Cidade = "Curitiba",
                             Complemento = "32",
-                            CriadoEm = new DateTimeOffset(new DateTime(2020, 6, 4, 0, 13, 26, 413, DateTimeKind.Unspecified).AddTicks(5), new TimeSpan(0, 0, 0, 0, 0)),
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 14, 21, 49, 41, 839, DateTimeKind.Unspecified).AddTicks(8576), new TimeSpan(0, 0, 0, 0, 0)),
                             Estado = "PR",
                             Logradouro = "Muricy 73",
                             Numero = "32"
@@ -296,9 +295,6 @@ namespace mercadosuspenso.orm.Migrations
                     b.Property<string>("Telefone")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTimeOffset?>("UltimoResgate")
-                        .HasColumnType("datetimeoffset");
-
                     b.HasKey("Id");
 
                     b.HasIndex("EnderecoId");
@@ -311,7 +307,7 @@ namespace mercadosuspenso.orm.Migrations
                             Id = "e942c6f6c1364447a584a8f2fee583c2",
                             Ativo = true,
                             Cpf = "09316578980",
-                            CriadoEm = new DateTimeOffset(new DateTime(2020, 6, 4, 0, 13, 26, 415, DateTimeKind.Unspecified).AddTicks(680), new TimeSpan(0, 0, 0, 0, 0)),
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 14, 21, 49, 41, 842, DateTimeKind.Unspecified).AddTicks(2214), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "email@email.com",
                             EnderecoId = "39f3a4d569ea400f848dd71deed5eb82",
                             Nome = "Luiz Inacio",
@@ -324,7 +320,7 @@ namespace mercadosuspenso.orm.Migrations
                             Id = "816e1eb79d7d4863a953f77e9d8a2347",
                             Ativo = true,
                             Cpf = "09316558980",
-                            CriadoEm = new DateTimeOffset(new DateTime(2020, 6, 4, 0, 13, 26, 415, DateTimeKind.Unspecified).AddTicks(5838), new TimeSpan(0, 0, 0, 0, 0)),
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 14, 21, 49, 41, 842, DateTimeKind.Unspecified).AddTicks(7920), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "email@email1.com",
                             Nome = "Carlos Gabriel",
                             Rg = "3243518",
@@ -336,7 +332,7 @@ namespace mercadosuspenso.orm.Migrations
                             Id = "02ee3c7582ea47a0a8105e9a8e9764bc",
                             Ativo = true,
                             Cpf = "09316573980",
-                            CriadoEm = new DateTimeOffset(new DateTime(2020, 6, 4, 0, 13, 26, 415, DateTimeKind.Unspecified).AddTicks(5951), new TimeSpan(0, 0, 0, 0, 0)),
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 14, 21, 49, 41, 842, DateTimeKind.Unspecified).AddTicks(8059), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "email@email2.com",
                             Nome = "Amanda Mendez",
                             Rg = "1243518",
@@ -407,7 +403,7 @@ namespace mercadosuspenso.orm.Migrations
                         {
                             Id = "d87e4de503984cfd8b282616ba50b42f",
                             Ativo = true,
-                            CriadoEm = new DateTimeOffset(new DateTime(2020, 6, 4, 0, 13, 26, 400, DateTimeKind.Unspecified).AddTicks(3067), new TimeSpan(0, 0, 0, 0, 0)),
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 14, 21, 49, 41, 828, DateTimeKind.Unspecified).AddTicks(7799), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "lucas.moraes@datasuricata.com.br",
                             Senha = "C3F21A70DFB5072C152691AF019CC68A",
                             Tipo = 99
@@ -416,7 +412,7 @@ namespace mercadosuspenso.orm.Migrations
                         {
                             Id = "e0176f9f9b0445de83411b404e68a311",
                             Ativo = true,
-                            CriadoEm = new DateTimeOffset(new DateTime(2020, 6, 4, 0, 13, 26, 400, DateTimeKind.Unspecified).AddTicks(5769), new TimeSpan(0, 0, 0, 0, 0)),
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 14, 21, 49, 41, 829, DateTimeKind.Unspecified).AddTicks(209), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "equipegkio@gmail.com",
                             Senha = "2D27FE16A2DE63872DDEC0BAFFB473BC",
                             Tipo = 99
@@ -425,7 +421,7 @@ namespace mercadosuspenso.orm.Migrations
                         {
                             Id = "c9f9cd17020c4bfaa83f7c53e5f9b278",
                             Ativo = true,
-                            CriadoEm = new DateTimeOffset(new DateTime(2020, 6, 4, 0, 13, 26, 400, DateTimeKind.Unspecified).AddTicks(5835), new TimeSpan(0, 0, 0, 0, 0)),
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 14, 21, 49, 41, 829, DateTimeKind.Unspecified).AddTicks(272), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "web.admin@mailinator.com",
                             Senha = "6C5F89C867E08F99BE95D3CBA4B88594",
                             Tipo = 99
@@ -434,7 +430,7 @@ namespace mercadosuspenso.orm.Migrations
                         {
                             Id = "7d5ea14a85ba4af7a4ca4c95545f3545",
                             Ativo = true,
-                            CriadoEm = new DateTimeOffset(new DateTime(2020, 6, 4, 0, 13, 26, 400, DateTimeKind.Unspecified).AddTicks(6657), new TimeSpan(0, 0, 0, 0, 0)),
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 14, 21, 49, 41, 829, DateTimeKind.Unspecified).AddTicks(1110), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "jeniffer.restaurante@restaurante.com",
                             Senha = "E10ADC3949BA59ABBE56E057F20F883E",
                             Tipo = 2
@@ -443,7 +439,7 @@ namespace mercadosuspenso.orm.Migrations
                         {
                             Id = "2580868e52444603b4d75fdf92f7f916",
                             Ativo = true,
-                            CriadoEm = new DateTimeOffset(new DateTime(2020, 6, 4, 0, 13, 26, 410, DateTimeKind.Unspecified).AddTicks(3829), new TimeSpan(0, 0, 0, 0, 0)),
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 14, 21, 49, 41, 837, DateTimeKind.Unspecified).AddTicks(2254), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "carlos@pizzaria.com",
                             Senha = "E10ADC3949BA59ABBE56E057F20F883E",
                             Tipo = 2
@@ -452,7 +448,7 @@ namespace mercadosuspenso.orm.Migrations
                         {
                             Id = "4bea229e5b5a4d66a75d1d248f7dc2d5",
                             Ativo = true,
-                            CriadoEm = new DateTimeOffset(new DateTime(2020, 6, 4, 0, 13, 26, 410, DateTimeKind.Unspecified).AddTicks(4408), new TimeSpan(0, 0, 0, 0, 0)),
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 14, 21, 49, 41, 837, DateTimeKind.Unspecified).AddTicks(2760), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "olivia@noturna.com.br",
                             Senha = "E10ADC3949BA59ABBE56E057F20F883E",
                             Tipo = 1
@@ -512,7 +508,7 @@ namespace mercadosuspenso.orm.Migrations
                             Id = "eeb45a8bc09e422dbfd45b456a78f878",
                             Ativo = true,
                             Cnpj = "18904128000145",
-                            CriadoEm = new DateTimeOffset(new DateTime(2020, 6, 4, 0, 13, 26, 414, DateTimeKind.Unspecified).AddTicks(4087), new TimeSpan(0, 0, 0, 0, 0)),
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 14, 21, 49, 41, 841, DateTimeKind.Unspecified).AddTicks(2637), new TimeSpan(0, 0, 0, 0, 0)),
                             EnderecoId = "010bafef4b7342bda843d22b1ec9d7c2",
                             Parceiro = false,
                             RazaoSocial = "Olivia e Raimundo Casa Noturna ME",
@@ -558,17 +554,17 @@ namespace mercadosuspenso.orm.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "c2324df6ea3a47dab5bd38fce556d828",
+                            Id = "70e0dd3d866049d1b5173ace821cce5b",
                             Ativo = true,
-                            CriadoEm = new DateTimeOffset(new DateTime(2020, 6, 4, 0, 13, 26, 415, DateTimeKind.Unspecified).AddTicks(8760), new TimeSpan(0, 0, 0, 0, 0)),
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 14, 21, 49, 41, 843, DateTimeKind.Unspecified).AddTicks(971), new TimeSpan(0, 0, 0, 0, 0)),
                             DistribuidorId = "cf936849e0b244a2a6a812c15d69390d",
                             VarejistaId = "eeb45a8bc09e422dbfd45b456a78f878"
                         },
                         new
                         {
-                            Id = "06950b118f944b64b5d736bc38b8481c",
+                            Id = "ba34b154de8045af9dff79bc68b728dc",
                             Ativo = true,
-                            CriadoEm = new DateTimeOffset(new DateTime(2020, 6, 4, 0, 13, 26, 415, DateTimeKind.Unspecified).AddTicks(9643), new TimeSpan(0, 0, 0, 0, 0)),
+                            CriadoEm = new DateTimeOffset(new DateTime(2020, 5, 14, 21, 49, 41, 843, DateTimeKind.Unspecified).AddTicks(1996), new TimeSpan(0, 0, 0, 0, 0)),
                             DistribuidorId = "189be3c445504dcf9d8559959579035e",
                             VarejistaId = "eeb45a8bc09e422dbfd45b456a78f878"
                         });

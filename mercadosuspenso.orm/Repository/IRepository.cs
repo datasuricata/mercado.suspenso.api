@@ -9,22 +9,22 @@ namespace mercadosuspenso.orm.Repository
 {
     public interface IRepository<T> where T : Entity
     {
-        IQueryable<T> Queryable(bool noTracking, params Expression<Func<T, object>>[] includes);
+        IQueryable<T> Queryable(bool noTracking = true, params Expression<Func<T, object>>[] includes);
 
-        Task UpdateAsync(T entity);
+        Task AtualizarAsync(T entity);
 
-        bool Exist(Func<T, bool> where, params Expression<Func<T, object>>[] includes);
+        bool Existe(Func<T, bool> where, params Expression<Func<T, object>>[] includes);
 
-        Task<T> ByIdAsync(string id, bool noTracking = true, params Expression<Func<T, object>>[] includes);
+        Task<T> PorIdAsync(string id, bool noTracking = true, params Expression<Func<T, object>>[] includes);
 
-        Task<T> ByAsync(Expression<Func<T, bool>> where, bool readOnly = true, params Expression<Func<T, object>>[] includes);
+        Task<T> PorAsync(Expression<Func<T, bool>> where, bool noTracking = true, params Expression<Func<T, object>>[] includes);
 
-        Task InsertAsync(T entity);
+        Task InserirAsync(T entity);
 
-        Task InsertRangeAsync(IEnumerable<T> entities);
+        Task InserirRangeAsync(IEnumerable<T> entities);
 
-        Task<IEnumerable<T>> ListAsync(bool noTracking = true, params Expression<Func<T, object>>[] includes);
+        Task<IEnumerable<T>> ListarAsync(bool noTracking = true, params Expression<Func<T, object>>[] includes);
 
-        Task<IEnumerable<T>> ListByAsync(Expression<Func<T, bool>> where, bool noTracking = true, params Expression<Func<T, object>>[] includes);
+        Task<IEnumerable<T>> ListarPorAsync(Expression<Func<T, bool>> where, bool noTracking = true, params Expression<Func<T, object>>[] includes);
     }
 }

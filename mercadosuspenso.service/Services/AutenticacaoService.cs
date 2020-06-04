@@ -33,7 +33,7 @@ namespace mercadosuspenso.service.Services
         {
             var md5 = password.EncryptToMD5();
 
-            var usuario = await usuarioRepository.ByAsync
+            var usuario = await usuarioRepository.PorAsync
             (
                 usuario =>
                 usuario.Ativo &&
@@ -54,6 +54,7 @@ namespace mercadosuspenso.service.Services
             {
                 "REPORTS",
                 "MANAGEMENT",
+                "IMPORTS"
             };
 
             var token = authProvider.CreateAccessToken(usuario, roles);
@@ -70,7 +71,7 @@ namespace mercadosuspenso.service.Services
         {
             var md5 = password.EncryptToMD5();
 
-            var varejista = await varejistaRepository.ByAsync
+            var varejista = await varejistaRepository.PorAsync
             (
                 varejista =>
                 varejista.Ativo &&
@@ -111,7 +112,7 @@ namespace mercadosuspenso.service.Services
         {
             var md5 = password.EncryptToMD5();
 
-            var distribuidor = await distribuidorRepository.ByAsync
+            var distribuidor = await distribuidorRepository.PorAsync
             (
                 varejista =>
                 varejista.Ativo &&

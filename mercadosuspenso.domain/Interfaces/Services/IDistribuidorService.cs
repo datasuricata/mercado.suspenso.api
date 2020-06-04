@@ -7,7 +7,7 @@ namespace mercadosuspenso.domain.Interfaces.Services
 {
     public interface IDistribuidorService
     {
-        Task AdicionarAsync(string razaoSocial, string nome, string cnpj, string telefone, string email, string senha);
+        Task AdicionarAsync(string razaoSocial, string nome, string cnpj, string telefone, string email, string senha, bool aceite);
         Task AprovarRecusarAsync(string id);
         Task AdicionarOuAlterarEnderecoLogadoAsync(string cep, string logradouro, string numero, string complemento, string bairro, string cidade, string estado);
         Task AtualizarAsync(string razaoSocial, string representante, string cnpj, string telefone);

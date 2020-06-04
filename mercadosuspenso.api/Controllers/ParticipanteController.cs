@@ -32,7 +32,14 @@ namespace mercadosuspenso.api.Controllers
                 command.Cpf,
                 command.Rg,
                 command.Telefone,
-                command.Email
+                command.Email,
+                command.Endereco.Cep,
+                command.Endereco.Logradouro,
+                command.Endereco.Numero,
+                command.Endereco.Complemento,
+                command.Endereco.Bairro,
+                command.Endereco.Cidade,
+                command.Endereco.Estado
             );
 
             return Ok();

@@ -20,17 +20,19 @@ namespace mercadosuspenso.service.Services
         private Assert Validar = DomainException.Validate;
 
         private readonly ISmtpService smtp;
-        private readonly IRepository<Varejista> repository;
+        private readonly IRepository<Varejista> varejistaRepository;
+        private readonly IRepository<Aceite> aceiteRepository;
+
         private readonly ClaimsPrincipal me;
 
-        public VarejistaService(ISmtpService smtp, IPrincipal principal, IRepository<Varejista> repository)
+        public VarejistaService(ISmtpService smtp, IPrincipal principal, IRepository<Varejista> varejistaRepository)
         {
             this.smtp = smtp;
-            this.repository = repository;
+            this.varejistaRepository = varejistaRepository;
             this.me = (ClaimsPrincipal)principal;
         }
 
-        public async Task AdicionarAsync(string razaoSocial, string representante, string cnpj, string telefone, string email, string senha)
+        public async Task AdicionarAsync(string razaoSocial, string representante, string cnpj, string telefone, string email, string senha, bool aceite)
         {
             var varejista = new Varejista(razaoSocial, representante, cnpj, telefone)
             {
@@ -39,7 +41,7 @@ namespace mercadosuspenso.service.Services
 
             varejista.Usuario.DefinirTipo(UsuarioTipo.Varejo);
 
-            var registrado = await repository.ByAsync(p => p.Ativo && p.Cnpj == varejista.Cnpj);
+            var registrado = await varejistaRepository.PorAsync(p => p.Ativo && p.Cnpj == varejista.Cnpj);
 
             if (registrado != null)
             {
@@ -50,7 +52,14 @@ namespace mercadosuspenso.service.Services
                     "Já um cadastro processado ou pendente com estes dados");
             }
 
-            await repository.InsertAsync(varejista);
+            Validar(aceite == false,
+                "É preciso aceitar os termos para concluir o cadastro");
+
+            await varejistaRepository.InserirAsync(varejista);
+
+            var termo = new Aceite(varejista.UsuarioId, varejista.Cnpj);
+
+            await aceiteRepository.InserirAsync(termo);
 
             await smtp.EnviarAsync(smtp.BoasVindas(email, representante));
         }
@@ -59,7 +68,7 @@ namespace mercadosuspenso.service.Services
         {
             var id = me.FindFirst(ClaimsConstant.Id).Value;
 
-            var varejista = await repository.ByAsync(c => c.UsuarioId == id, false);
+            var varejista = await varejistaRepository.PorAsync(c => c.UsuarioId == id, noTracking: false);
 
             Validar(varejista == null,
                 "Usuário não encontrado, talvez a sessão tenha expirado, tente logar novamente");
@@ -69,12 +78,12 @@ namespace mercadosuspenso.service.Services
             varejista.Cnpj = cnpj;
             varejista.Telefone = telefone;
 
-            await repository.UpdateAsync(varejista);
+            await varejistaRepository.AtualizarAsync(varejista);
         }
 
         public async Task AprovarRecusarAsync(string id)
         {
-            var varejista = await repository.ByAsync(p => p.Ativo && p.Id == id, false, i => i.Usuario);
+            var varejista = await varejistaRepository.PorAsync(p => p.Ativo && p.Id == id, noTracking: false, i => i.Usuario);
 
             if (varejista.Status == RegistroStatus.Aprovado)
             {
@@ -92,7 +101,7 @@ namespace mercadosuspenso.service.Services
         {
             var id = me.FindFirst(ClaimsConstant.Id).Value;
 
-            var varejista = await repository.ByAsync(c => c.UsuarioId == id, false);
+            var varejista = await varejistaRepository.PorAsync(c => c.UsuarioId == id, noTracking: false);
 
             Validar(varejista == null,
                 "Usuário não encontrado, talvez a sessão tenha expirado, tente logar novamente");
@@ -114,14 +123,12 @@ namespace mercadosuspenso.service.Services
                 varejista.Endereco.Validar();
             }
 
-            await repository.UpdateAsync(varejista);
+            await varejistaRepository.AtualizarAsync(varejista);
         }
 
         public async Task<EntidadeDto> PorIdAsync(string id)
         {
-            var entidade = await repository.ByIdAsync(id);
-
-            return EntidadeDto.From(entidade);
+            return EntidadeDto.From(await varejistaRepository.PorIdAsync(id));
         }
 
         public async Task<EntidadeDto> MeusDadosAsync()
@@ -131,11 +138,10 @@ namespace mercadosuspenso.service.Services
             Validar(string.IsNullOrEmpty(id),
                "Usuário não encontrado, talvez a sessão tenha expirado, tente logar novamente");
 
-            var entidade = await repository.ByAsync
+            var entidade = await varejistaRepository.PorAsync
             (
                 varejista =>
                 varejista.Usuario.Id == id,
-                readOnly: true,
                 includes: i => i.Usuario
             );
 
@@ -144,7 +150,7 @@ namespace mercadosuspenso.service.Services
 
         public async Task<IEnumerable<ContadorDto>> TotalAsync()
         {
-            return await repository.Queryable(true).GroupBy(x => x.Status).Select(a => new ContadorDto
+            return await varejistaRepository.Queryable().GroupBy(x => x.Status).Select(a => new ContadorDto
             {
                 Titulo = $"Varejistas com status {a.Key.ToString().ToLower()}",
                 Status = a.Key.ToString(),
@@ -154,9 +160,8 @@ namespace mercadosuspenso.service.Services
 
         public async Task<IEnumerable<EntidadeDto>> ListarPorStatusAsync(RegistroStatus status)
         {
-            var entidades = await repository.ListByAsync(c => c.Status == status, noTracking: true);
-
-            return entidades.OrderBy(a => a.CriadoEm).Select(EntidadeDto.From);
+            return (await varejistaRepository.ListarPorAsync(c => c.Status == status))
+                .OrderBy(a => a.CriadoEm).Select(EntidadeDto.From);
         }
     }
 }
